@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0.1;
+  }
+}
+
+.matrix-line {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: #22c55e; /* Tailwind green-500 */
+  opacity: 0.3;
+  animation: matrix-fall 1.8s linear infinite;
+}

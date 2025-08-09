@@ -6,10 +6,10 @@ export function Header() {
       <div className="text-center">
         {/* Main Title */}
         <h1 className="text-6xl font-bold mb-4 tracking-wider font-mono" style={{ color: '#0B874F' }}>
-          OSDC COREVERSE
+          UFC
         </h1>
         <p className="text-xl opacity-90 font-mono" style={{ color: '#4A90E2' }}>
-          A Living Digital Realm for Developers
+          We serve no proprietary material, only the flow of free information.
         </p>
         
         {/* GitHub Feed and Join button - top right */}

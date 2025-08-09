@@ -26,6 +26,8 @@ const LoadingPage = () => {
   const animationFrameRef = useRef<number>();
   const startTimeRef = useRef<number>();
   const pathPointsRef = useRef<PathPoint[]>([]);
+  const isSkippedRef = useRef(false);
+
 
   const githubTips = [
     "git stash - Temporarily save changes without committing",
@@ -158,7 +160,7 @@ const LoadingPage = () => {
     }
     
     // Continue animation if not complete
-    if (newProgress < 100) {
+    if (newProgress < 100 && !isSkippedRef.current) {
       animationFrameRef.current = requestAnimationFrame(animate);
     }
   }, [currentStep, storySteps.length]);
@@ -181,6 +183,24 @@ const LoadingPage = () => {
     setCurrentTip(randomTip);
   }, []);
 
+  const handleSkip = () => {
+    isSkippedRef.current = true;
+    setProgress(100);
+    setCurrentStep(storySteps.length - 1);
+  
+    // Cancel any ongoing animation
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+  
+    // Move arrow to last point
+    const last = pathPointsRef.current[pathPointsRef.current.length - 1];
+    if (last) {
+      setArrowPosition({ x: last.x, y: last.y, angle: last.angle });
+    }
+  };
+  
+
   // Generate SVG path for zig-zag line
   const generateZigZagPath = () => {
     if (storySteps.length === 0) return '';
@@ -197,6 +217,13 @@ const LoadingPage = () => {
   return (
     <div className="fixed inset-0 bg-black flex flex-col justify-between overflow-hidden">
       {/* Main Content Area with 10vw margins */}
+        {/* Skip Button */}
+        <button
+          onClick={handleSkip}
+          className="absolute top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-green-400 border border-green-400 rounded hover:bg-green-700 transition-colors text-sm font-mono">
+          Skip
+        </button>
+
       <div className="relative flex-1 flex items-center justify-center px-8 py-16">
         <div className="absolute inset-0 mx-[10vw] my-8">
           {/* SVG Container for Path and Arrow */}
@@ -296,21 +323,20 @@ const LoadingPage = () => {
               ))}
             </div>
             
-            {/* Simplified Digital Rain Effect */}
+            {/* Optimized Digital Rain Effect */}
             <div className="absolute inset-0 overflow-hidden">
-              {Array.from({ length: 10 }).map((_, i) => (
+              {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
-                  className="absolute w-1 bg-green-400 opacity-60 animate-matrix-rain"
+                  className="matrix-line"
                   style={{
-                    left: `${(i / 10) * 100}%`,
-                    height: `${Math.random() * 60 + 20}%`,
-                    top: `${Math.random() * 40}%`,
-                    animationDelay: `${Math.random() * 2}s`
+                    left: `${(i / 12) * 100}%`,
+                    animationDelay: `${(i % 6) * 0.3}s`,
                   }}
                 />
               ))}
             </div>
+
             
             {/* Progress Fill with Circuit Pattern */}
             <div
