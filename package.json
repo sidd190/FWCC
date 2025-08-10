@@ -9,12 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@studio-freight/lenis": "^1.0.42",
+    "@types/locomotive-scroll": "^4.1.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "d3": "^7.9.0",
+    "framer-motion": "^12.23.12",
+    "gsap": "^3.13.0",
+    "locomotive-scroll": "^4.1.4",
     "lucide-react": "^0.536.0",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-globe.gl": "^2.35.0"
+    "react-globe.gl": "^2.35.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -22,6 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.6",
     "typescript": "^5"
   }
 }
