@@ -1,80 +1,62 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Github, ExternalLink, Star, GitFork, Users, Calendar, ArrowLeft, Download } from "lucide-react"
+import { Calendar, Clock, MapPin, Users, ArrowLeft, Share2, Heart } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-const projects = [
+const events = [
   {
     id: 1,
-    title: "DevFlow",
-    description: "A comprehensive developer workflow automation tool built with React and Node.js",
-    longDescription: `DevFlow is a revolutionary developer workflow automation platform that streamlines the entire development process from initial code commit to final deployment. Built with modern technologies and designed for scalability, DevFlow integrates seamlessly with existing development workflows.
+    title: "Open Source Hackathon 2024",
+    date: "2024-03-15",
+    time: "09:00 AM",
+    location: "USAR Campus, Tech Hub",
+    attendees: 150,
+    category: "Hackathon",
+    status: "upcoming",
+    description: "48-hour intensive hackathon focusing on solving real-world problems with open source solutions.",
+    fullDescription: `Join us for the most exciting hackathon of the year! This 48-hour intensive event brings together developers, designers, and innovators to tackle real-world challenges using open source technologies.
 
-    Key Features:
-    • Automated Testing Pipeline - Run comprehensive tests on every commit
-    • Intelligent Code Review - AI-powered code analysis and suggestions  
-    • Deployment Automation - One-click deployments to multiple environments
-    • Team Collaboration Tools - Real-time collaboration and communication
-    • Performance Monitoring - Track application performance and user metrics
-    • Security Scanning - Automated vulnerability detection and reporting
+    What to expect:
+    • Collaborative problem-solving sessions
+    • Mentorship from industry experts  
+    • Access to cutting-edge tools and APIs
+    • Networking opportunities with like-minded developers
+    • Amazing prizes and recognition
 
-    DevFlow has been adopted by over 100 development teams worldwide and has processed more than 10,000 deployments. The platform reduces deployment time by 75% and increases code quality through automated reviews and testing.
+    Whether you're a seasoned developer or just starting your coding journey, this hackathon offers something for everyone. Form teams, build innovative solutions, and contribute to the open source community while competing for exciting prizes.
 
-    Whether you're a solo developer or part of a large team, DevFlow adapts to your workflow and helps you ship better code faster. Join our growing community of developers who are revolutionizing how software is built and deployed.`,
-    category: "Web Development",
-    status: "active",
-    difficulty: "Advanced",
-    tech: ["React", "Node.js", "TypeScript", "Docker", "AWS", "PostgreSQL", "Redis", "GraphQL"],
-    github: "https://github.com/ufc/devflow",
-    demo: "https://devflow-demo.vercel.app",
-    image: "/devflow-dashboard-interface.png",
-    contributors: 12,
-    stars: 245,
-    forks: 67,
-    lastUpdate: "2024-02-28",
+    Registration includes meals, swag, and access to all workshops and mentoring sessions. Don't miss this opportunity to showcase your skills and make lasting connections in the tech community!`,
+    image: "/hackathon-coding-event.png",
+    tags: ["React", "Python", "AI/ML", "Blockchain"],
     featured: true,
-    color: "blue",
-    maintainer: "UFC Development Team",
-    license: "MIT",
-    version: "v2.1.0",
-    requirements: ["Node.js 18+", "Docker", "PostgreSQL", "Redis"],
-    installation: [
-      "Clone the repository: git clone https://github.com/ufc/devflow.git",
-      "Install dependencies: npm install",
-      "Set up environment variables: cp .env.example .env",
-      "Start the development server: npm run dev",
-    ],
-    roadmap: [
-      { version: "v2.2.0", features: ["Advanced Analytics Dashboard", "Slack Integration"], status: "In Progress" },
-      { version: "v2.3.0", features: ["Mobile App", "API v2"], status: "Planned" },
-      { version: "v3.0.0", features: ["AI-Powered Insights", "Multi-Cloud Support"], status: "Future" },
+    organizer: "UFC Tech Team",
+    requirements: ["Laptop", "Basic programming knowledge", "Enthusiasm to learn"],
+    schedule: [
+      { time: "09:00 AM", activity: "Registration & Welcome" },
+      { time: "10:00 AM", activity: "Opening Ceremony" },
+      { time: "11:00 AM", activity: "Team Formation" },
+      { time: "12:00 PM", activity: "Hacking Begins!" },
+      { time: "01:00 PM", activity: "Lunch Break" },
+      { time: "06:00 PM", activity: "Dinner & Networking" },
+      { time: "12:00 AM", activity: "Midnight Snacks" },
     ],
   },
-  // Add other projects here...
+  // Add other events here...
 ]
 
-interface ProjectDetailPageProps {
+interface EventDetailPageProps {
   params: {
     id: string
   }
 }
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const project = projects.find((p) => p.id === Number.parseInt(params.id))
+export default function EventDetailPage({ params }: EventDetailPageProps) {
+  const event = events.find((e) => e.id === Number.parseInt(params.id))
 
-  if (!project) {
+  if (!event) {
     notFound()
-  }
-
-  const colorClasses = {
-    blue: "from-blue-500 to-blue-600",
-    green: "from-green-500 to-green-600",
-    purple: "from-purple-500 to-purple-600",
-    red: "from-red-500 to-red-600",
-    yellow: "from-yellow-500 to-yellow-600",
-    orange: "from-orange-500 to-orange-600",
   }
 
   return (
@@ -87,122 +69,64 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           animate={{ scale: 1 }}
           transition={{ duration: 1.5 }}
         >
-          <img src={project.image || "/placeholder.svg"} alt={project.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+          <img src={event.image || "/placeholder.svg"} alt={event.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         </motion.div>
 
-        {/* Geometric Elements */}
-        <div className="absolute inset-0 z-5">
-          <motion.div
-            className={`absolute top-20 right-20 w-24 h-24 bg-gradient-to-br ${
-              colorClasses[project.color as keyof typeof colorClasses]
-            } transform rotate-45`}
-            animate={{
-              rotate: [45, 55, 45],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-32 left-20 w-16 h-32 bg-white transform -rotate-12"
-            animate={{
-              rotate: [-12, -8, -12],
-              scaleY: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 1,
-            }}
-          />
-        </div>
-
         <div className="relative z-10 h-full flex items-end">
-          <div className="max-w-7xl mx-auto px-6 pb-20 w-full">
+          <div className="max-w-7xl mx-auto px-6 pb-20">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
             >
-              <Link href="/projects">
+              <Link href="/events">
                 <motion.div
-                  className="inline-flex items-center gap-2 text-white hover:text-green-400 transition-colors mb-6 font-bold"
+                  className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors mb-6"
                   whileHover={{ x: -5 }}
                 >
-                  <ArrowLeft className="w-5 h-5" />
-                  BACK TO PROJECTS
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Events
                 </motion.div>
               </Link>
 
               <div className="flex flex-wrap items-center gap-4 mb-6">
-                <span
-                  className={`px-4 py-2 bg-gradient-to-r ${
-                    colorClasses[project.color as keyof typeof colorClasses]
-                  } text-black font-black transform -skew-x-3`}
-                >
-                  {project.category}
+                <span className="px-4 py-2 bg-green-500/20 text-green-400 rounded-full font-medium border border-green-500/30">
+                  {event.category}
                 </span>
-                <span className="px-4 py-2 bg-white text-black font-black transform skew-x-3">
-                  {project.status.toUpperCase()}
+                <span className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-full font-medium border border-blue-500/30">
+                  {event.status}
                 </span>
-                <span className="px-4 py-2 border-2 border-white text-white font-black">{project.difficulty}</span>
+                {event.featured && (
+                  <span className="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-full font-medium border border-yellow-500/30">
+                    Featured
+                  </span>
+                )}
               </div>
 
-              <h1 className="text-6xl md:text-8xl font-black mb-6 text-white transform -skew-x-6 shadow-2xl">
-                {project.title}
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent">
+                {event.title}
               </h1>
 
-              <p className="text-xl text-gray-300 mb-8 max-w-3xl">{project.description}</p>
+              <p className="text-xl text-gray-300 mb-8 max-w-3xl">{event.description}</p>
 
-              <div className="flex flex-wrap gap-6 text-gray-300 mb-8">
+              <div className="flex flex-wrap gap-6 text-gray-300">
                 <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span className="font-bold">{project.stars} stars</span>
+                  <Calendar className="w-5 h-5 text-green-400" />
+                  <span>{new Date(event.date).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GitFork className="w-5 h-5 text-blue-400" />
-                  <span className="font-bold">{project.forks} forks</span>
+                  <Clock className="w-5 h-5 text-blue-400" />
+                  <span>{event.time}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-green-400" />
-                  <span className="font-bold">{project.contributors} contributors</span>
+                  <MapPin className="w-5 h-5 text-red-400" />
+                  <span>{event.location}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-red-400" />
-                  <span className="font-bold">Updated {new Date(project.lastUpdate).toLocaleDateString()}</span>
+                  <Users className="w-5 h-5 text-yellow-400" />
+                  <span>{event.attendees} attendees</span>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <motion.a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-6 py-3 bg-white text-black font-black transform -skew-x-3 hover:skew-x-0 transition-transform duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Github className="w-5 h-5" />
-                  VIEW ON GITHUB
-                </motion.a>
-                {project.demo && (
-                  <motion.a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-6 py-3 border-2 border-white text-white font-black transform skew-x-3 hover:-skew-x-0 transition-transform duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    LIVE DEMO
-                  </motion.a>
-                )}
               </div>
             </motion.div>
           </div>
@@ -221,37 +145,29 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl font-black mb-6 text-white transform -skew-x-3">ABOUT THIS PROJECT</h2>
+                <h2 className="text-3xl font-bold mb-6 text-green-400">About This Event</h2>
                 <div className="prose prose-invert max-w-none">
-                  {project.longDescription?.split("\n\n").map((paragraph, index) => (
+                  {event.fullDescription?.split("\n\n").map((paragraph, index) => (
                     <p key={index} className="text-gray-300 mb-4 leading-relaxed">
                       {paragraph}
                     </p>
                   ))}
                 </div>
 
-                <div className="mt-8">
-                  <h3 className="text-2xl font-black mb-4 text-white">TECH STACK</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tech.map((tech, index) => (
-                      <motion.span
-                        key={tech}
-                        className="px-4 py-2 bg-gray-800 text-white font-bold transform skew-x-3 hover:-skew-x-3 transition-transform duration-200"
-                        initial={{ opacity: 0, scale: 0 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        whileHover={{ scale: 1.1 }}
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-2 mt-8">
+                  {event.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-gray-800/50 text-gray-300 rounded-lg text-sm border border-gray-700"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </motion.div>
 
-              {/* Installation Guide */}
-              {project.installation && (
+              {/* Schedule */}
+              {event.schedule && (
                 <motion.div
                   className="mt-12"
                   initial={{ opacity: 0, y: 30 }}
@@ -259,71 +175,19 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <h3 className="text-3xl font-black mb-6 text-white transform skew-x-3">INSTALLATION</h3>
-                  <div className="bg-gray-900 border-4 border-gray-700 p-6 transform -skew-x-1">
-                    <ol className="space-y-3">
-                      {project.installation.map((step, index) => (
-                        <motion.li
-                          key={index}
-                          className="flex items-start gap-3 text-gray-300"
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                          viewport={{ once: true }}
-                        >
-                          <span className="bg-green-500 text-black font-black px-2 py-1 text-sm transform skew-x-3 min-w-[24px] text-center">
-                            {index + 1}
-                          </span>
-                          <code className="font-mono text-sm">{step}</code>
-                        </motion.li>
-                      ))}
-                    </ol>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Roadmap */}
-              {project.roadmap && (
-                <motion.div
-                  className="mt-12"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className="text-3xl font-black mb-6 text-white transform -skew-x-3">ROADMAP</h3>
+                  <h3 className="text-2xl font-bold mb-6 text-blue-400">Event Schedule</h3>
                   <div className="space-y-4">
-                    {project.roadmap.map((item, index) => (
+                    {event.schedule.map((item, index) => (
                       <motion.div
                         key={index}
-                        className="p-4 bg-gray-900 border-l-4 border-blue-500 transform skew-x-1"
+                        className="flex items-center gap-4 p-4 bg-gray-900/50 rounded-lg border border-gray-800"
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                         viewport={{ once: true }}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-xl font-bold text-white">{item.version}</h4>
-                          <span
-                            className={`px-3 py-1 text-xs font-bold transform -skew-x-3 ${
-                              item.status === "In Progress"
-                                ? "bg-yellow-500 text-black"
-                                : item.status === "Planned"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-gray-500 text-white"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </div>
-                        <ul className="text-gray-300 text-sm">
-                          {item.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-400 rounded-full" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
+                        <div className="text-green-400 font-mono font-semibold min-w-[80px]">{item.time}</div>
+                        <div className="text-gray-300">{item.activity}</div>
                       </motion.div>
                     ))}
                   </div>
@@ -340,52 +204,46 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                {/* Contribute Card */}
-                <div className="p-6 bg-gradient-to-br from-green-900/20 to-green-800/20 border-4 border-green-500 transform -skew-x-3">
-                  <h3 className="text-xl font-black mb-4 text-green-400 transform skew-x-3">CONTRIBUTE</h3>
-                  <p className="text-gray-300 mb-6 transform skew-x-3">
-                    Join our community of developers and help make this project even better!
-                  </p>
+                {/* Registration Card */}
+                <div className="p-6 bg-gradient-to-br from-green-900/20 to-green-800/20 rounded-2xl border border-green-500/30 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold mb-4 text-green-400">Register Now</h3>
+                  <p className="text-gray-300 mb-6">Secure your spot at this amazing event. Limited seats available!</p>
                   <motion.button
-                    className="w-full py-3 bg-green-500 text-black font-black transform skew-x-3 hover:-skew-x-3 transition-transform duration-300"
+                    className="w-full py-3 bg-gradient-to-r from-green-600 to-green-500 text-black font-semibold rounded-lg hover:from-green-500 hover:to-green-400 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    START CONTRIBUTING
+                    Register for Event
                   </motion.button>
                 </div>
 
-                {/* Project Info */}
-                <div className="p-6 bg-gray-900 border-4 border-gray-700 transform skew-x-3">
-                  <h3 className="text-xl font-black mb-4 text-white transform -skew-x-3">PROJECT INFO</h3>
-                  <div className="space-y-3 text-sm transform -skew-x-3">
+                {/* Event Details */}
+                <div className="p-6 bg-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold mb-4 text-white">Event Details</h3>
+                  <div className="space-y-3 text-sm">
                     <div>
-                      <span className="text-gray-400 font-bold">MAINTAINER:</span>
-                      <span className="text-white ml-2">{project.maintainer}</span>
+                      <span className="text-gray-400">Organizer:</span>
+                      <span className="text-white ml-2">{event.organizer}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400 font-bold">LICENSE:</span>
-                      <span className="text-white ml-2">{project.license}</span>
+                      <span className="text-gray-400">Category:</span>
+                      <span className="text-white ml-2">{event.category}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400 font-bold">VERSION:</span>
-                      <span className="text-white ml-2">{project.version}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-400 font-bold">STATUS:</span>
-                      <span className="text-white ml-2 capitalize">{project.status}</span>
+                      <span className="text-gray-400">Status:</span>
+                      <span className="text-white ml-2 capitalize">{event.status}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Requirements */}
-                {project.requirements && (
-                  <div className="p-6 bg-gray-900 border-4 border-gray-700 transform -skew-x-3">
-                    <h3 className="text-xl font-black mb-4 text-white transform skew-x-3">REQUIREMENTS</h3>
-                    <ul className="space-y-2 transform skew-x-3">
-                      {project.requirements.map((req, index) => (
-                        <li key={index} className="flex items-center gap-2 text-gray-300 text-sm">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                {event.requirements && (
+                  <div className="p-6 bg-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
+                    <h3 className="text-xl font-bold mb-4 text-white">What to Bring</h3>
+                    <ul className="space-y-2">
+                      {event.requirements.map((req, index) => (
+                        <li key={index} className="flex items-center gap-2 text-gray-300">
+                          <div className="w-2 h-2 bg-green-400 rounded-full" />
                           {req}
                         </li>
                       ))}
@@ -393,25 +251,25 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   </div>
                 )}
 
-                {/* Quick Actions */}
-                <div className="p-6 bg-gray-900 border-4 border-gray-700 transform skew-x-3">
-                  <h3 className="text-xl font-black mb-4 text-white transform -skew-x-3">QUICK ACTIONS</h3>
-                  <div className="space-y-3 transform -skew-x-3">
+                {/* Social Actions */}
+                <div className="p-6 bg-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold mb-4 text-white">Share Event</h3>
+                  <div className="flex gap-3">
                     <motion.button
-                      className="w-full flex items-center justify-center gap-2 py-2 bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Download className="w-4 h-4" />
-                      DOWNLOAD
+                      <Share2 className="w-4 h-4" />
+                      Share
                     </motion.button>
                     <motion.button
-                      className="w-full flex items-center justify-center gap-2 py-2 bg-gray-700 text-white font-bold hover:bg-gray-600 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-600/20 text-red-400 rounded-lg border border-red-500/30 hover:bg-red-600/30 transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Star className="w-4 h-4" />
-                      STAR PROJECT
+                      <Heart className="w-4 h-4" />
+                      Save
                     </motion.button>
                   </div>
                 </div>
