@@ -75,11 +75,12 @@ export default function Page() {
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#E94B3C' }}></div>
                 <span style={{ color: '#FFFFFF' }}>Low (&lt;30k)</span>
-              </div>
+              </div>  
             </div>
           </div>
         </div>
       </div>
+      {/* <AboutPageClient></AboutPageClient>  */}
     </>
   );
 }
