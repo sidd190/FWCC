@@ -4,8 +4,8 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Calendar, Clock, MapPin, Users, Plus, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { useRef, useState, useEffect } from "react"
-import EnhancedButton from "@/components/enhanced-button"
-import PageTransition from "@/components/page-transition"
+import EnhancedButton from "../Components/enhanced-button"
+import PageTransition from "../Components/page-transition"
 
 const events = [
   {

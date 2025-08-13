@@ -4,8 +4,8 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Github, ExternalLink, Star, Plus, Users, GitPullRequest } from "lucide-react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import EnhancedButton from "@/components/enhanced-button"
-import PageTransition from "@/components/page-transition"
+import EnhancedButton from "../Components/enhanced-button"
+import PageTransition from "../Components/page-transition"
 
 const projects = [
   {
@@ -402,21 +402,7 @@ function HologramProjectCard({ project, index, isSelected, onSelect, isCompact =
           {/* Hologram Components */}
           <AnimatePresence>
             {isHovered && (
-              <div className="absolute inset-0 p-6">"use client"
-
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import { Github, ExternalLink, Star, Plus, Users, GitPullRequest } from "lucide-react"
-import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
-import EnhancedButton from "@/components/enhanced-button"
-import PageTransition from "@/components/page-transition"
-
-const projects = [
-…      </Link>
-    </motion.div>
-  )
-}
-
+              <div className="absolute inset-0 p-6">
                 {project.hologramData.components.map((component, compIndex) => (
                   <motion.div
                     key={component}
