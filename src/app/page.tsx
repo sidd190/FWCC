@@ -3,7 +3,7 @@ import { Header } from "./Components/header";
 import { TerminalOverlay } from "./Components/terminalOverlay";
 import { BackgroundElements } from "./Components/backgroundElements";
 import { CursorTrail } from "./Components/cursorTrail";
-import AboutPageClient from "./about/AboutPageClient";
+import { Menu } from "./Components/menu";
 
 export default function Page() {
   return (
@@ -12,16 +12,15 @@ export default function Page() {
         className="relative w-full h-screen overflow-hidden font-mono"
         style={{ backgroundColor: '#000000' }}
       >
-        {/* Cursor Trail Effect */}
+        {/* Cursor Trail */}
         <CursorTrail />
 
         {/* Background Elements */}
         <BackgroundElements />
 
-        {/* Globe Container - 25% Larger */}
+        {/* Globe */}
         <div className="fixed inset-0 flex items-center justify-center z-10">
           <div className="relative">
-            {/* Constant Glow Effect - Adjusted for larger globe */}
             <div 
               className="absolute w-[900px] h-[900px] rounded-full blur-3xl opacity-25"
               style={{ 
@@ -31,7 +30,6 @@ export default function Page() {
                 transform: 'translate(-50%, -50%)'
               }}
             ></div>
-            {/* Globe Container - 25% increase: 600px -> 750px */}
             <div className="relative w-[750px] h-[750px] flex items-center justify-center">
               <GlobeComponent />
             </div>
@@ -40,9 +38,10 @@ export default function Page() {
 
         {/* UI Components */}
         <Header />
+        <Menu />
         <TerminalOverlay />
 
-        {/* Legend - Updated with new color scheme */}
+        {/* Legend */}
         <div className="absolute top-1/2 left-8 transform -translate-y-1/2 z-20">
           <div 
             className="rounded-lg p-4 font-mono backdrop-blur-md border"
@@ -80,7 +79,6 @@ export default function Page() {
           </div>
         </div>
       </div>
-      {/* <AboutPageClient></AboutPageClient>  */}
     </>
   );
 }
