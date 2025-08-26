@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Github, ExternalLink, Star, GitFork, Users, Calendar, ArrowLeft, Download } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { use } from "react"
 
 const projects = [
   {
@@ -56,13 +57,14 @@ const projects = [
 ]
 
 interface ProjectDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const project = projects.find((p) => p.id === Number.parseInt(params.id))
+  const { id } = use(params)
+  const project = projects.find((p) => p.id === Number.parseInt(id))
 
   if (!project) {
     notFound()

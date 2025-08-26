@@ -42,7 +42,7 @@ export default function Page() {
         <TerminalOverlay />
 
         {/* Legend */}
-        <div className="absolute top-1/2 left-8 transform -translate-y-1/2 z-20">
+        <div className="absolute top-1/4 left-8 transform -translate-y-1/2 z-20">
           <div 
             className="rounded-lg p-4 font-mono backdrop-blur-md border"
             style={{ 

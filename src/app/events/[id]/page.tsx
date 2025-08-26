@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Calendar, Clock, MapPin, Users, ArrowLeft, Share2, Heart } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { use } from "react"
 
 const events = [
   {
@@ -47,13 +48,14 @@ const events = [
 ]
 
 interface EventDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function EventDetailPage({ params }: EventDetailPageProps) {
-  const event = events.find((e) => e.id === Number.parseInt(params.id))
+  const { id } = use(params)
+  const event = events.find((e) => e.id === Number.parseInt(id))
 
   if (!event) {
     notFound()

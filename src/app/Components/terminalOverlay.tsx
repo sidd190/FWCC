@@ -87,7 +87,7 @@ export function TerminalOverlay() {
   return (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-6xl px-8">
       <div
-        className="rounded-xl p-8 font-mono backdrop-blur-xl border-2"
+        className="rounded-xl p-6 font-mono backdrop-blur-xl border-2"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
           borderColor: '#0B874F',
@@ -97,7 +97,7 @@ export function TerminalOverlay() {
       >
         {/* Terminal header */}
         <div
-          className="flex items-center gap-2 mb-6 pb-4 border-b-2"
+          className="flex items-center gap-2 mb-4 pb-3 border-b-2"
           style={{ borderColor: '#0B874F' }}
         >
           <div className="flex gap-2">
@@ -123,7 +123,7 @@ export function TerminalOverlay() {
         </div>
 
         {/* Terminal content */}
-        <div className="space-y-3 mb-6 max-h-[250px] overflow-y-auto">
+        <div className="space-y-2 mb-4 max-h-[200px] overflow-y-auto">
           {lines.map((line, index) => (
             <div
               key={index}
