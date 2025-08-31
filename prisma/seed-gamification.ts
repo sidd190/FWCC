@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AchievementCategory, BadgeRarity } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -218,7 +218,7 @@ async function seedGamification() {
       name: 'Early Adopter',
       description: 'One of the first 100 members',
       icon: '🌅',
-      category: 'SPECIAL',
+      category: 'SPECIAL' as const,
       points: 500,
       requirement: { memberNumber: 100 },
     },
@@ -226,7 +226,7 @@ async function seedGamification() {
       name: 'Beta Tester',
       description: 'Participated in beta testing',
       icon: '🧪',
-      category: 'SPECIAL',
+      category: 'SPECIAL' as const,
       points: 750,
       requirement: { betaTester: true },
     },
@@ -234,7 +234,7 @@ async function seedGamification() {
       name: 'Founding Member',
       description: 'Charter member of FOSSER',
       icon: '👑',
-      category: 'SPECIAL',
+      category: 'SPECIAL' as const,
       points: 1000,
       requirement: { founder: true },
     },

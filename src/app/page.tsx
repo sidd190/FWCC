@@ -18,11 +18,12 @@ export default function Page() {
         {/* Background Elements */}
         <BackgroundElements />
 
-        {/* Globe */}
-        <div className="fixed inset-0 flex items-center justify-center z-10">
-          <div className="relative">
+        {/* Globe Container with Performance Optimizations */}
+        <div className="fixed inset-0 flex items-center justify-center z-10 globe-container hardware-accelerated">
+          <div className="relative w-full h-full flex items-center justify-center render-optimized">
+            {/* Vibrant Background Glow */}
             <div 
-              className="absolute w-[900px] h-[900px] rounded-full blur-3xl opacity-25"
+              className="absolute w-[90vw] h-[90vw] max-w-[900px] max-h-[900px] rounded-full blur-3xl opacity-25 transition-all duration-1000"
               style={{ 
                 backgroundColor: '#0B874F',
                 left: '50%',
@@ -30,7 +31,9 @@ export default function Page() {
                 transform: 'translate(-50%, -50%)'
               }}
             ></div>
-            <div className="relative w-[750px] h-[750px] flex items-center justify-center">
+            
+            {/* Optimized Globe Container */}
+            <div className="relative w-[85vw] h-[85vw] max-w-[750px] max-h-[750px] flex items-center justify-center transition-all duration-500">
               <GlobeComponent />
             </div>
           </div>
@@ -41,41 +44,49 @@ export default function Page() {
         <Menu />
         <TerminalOverlay />
 
-        {/* Legend */}
-        <div className="absolute top-1/4 left-8 transform -translate-y-1/2 z-20">
+        {/* Enhanced Legend with Better Responsiveness */}
+        <div className="absolute top-1/4 left-4 md:left-8 transform -translate-y-1/2 z-20">
           <div 
-            className="rounded-lg p-4 font-mono backdrop-blur-md border"
+            className="rounded-lg p-3 md:p-4 font-mono backdrop-blur-md border transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
             style={{ 
               backgroundColor: 'rgba(0, 0, 0, 0.3)', 
               borderColor: '#0B874F',
               boxShadow: '0 0 20px rgba(11, 135, 79, 0.2)'
             }}
           >
-            <h4 className="text-sm font-bold mb-3" style={{ color: '#F5A623' }}>
+            <h4 className="text-xs md:text-sm font-bold mb-2 md:mb-3" style={{ color: '#F5A623' }}>
               OSC Levels
             </h4>
-            <div className="space-y-2 text-xs">
+            <div className="space-y-1 md:space-y-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#0B874F' }}></div>
-                <span style={{ color: '#FFFFFF' }}>Very High (500k+)</span>
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#2D8F5A' }}></div>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Very High (500k+)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#2D8F5A' }}></div>
-                <span style={{ color: '#FFFFFF' }}>High (200k-500k)</span>
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#4A6741' }}></div>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">High (200k-500k)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#4A6741' }}></div>
-                <span style={{ color: '#FFFFFF' }}>Medium (80k-200k)</span>
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#6B7A3A' }}></div>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Medium (80k-200k)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#F5A623' }}></div>
-                <span style={{ color: '#FFFFFF' }}>Low-Med (30k-80k)</span>
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#8B6B2A' }}></div>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Low-Med (30k-80k)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#E94B3C' }}></div>
-                <span style={{ color: '#FFFFFF' }}>Low (&lt;30k)</span>
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#8B3A3A' }}></div>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Low (&lt;30k)</span>
               </div>  
             </div>
+          </div>
+        </div>
+
+        {/* Interactive Hint */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="bg-black/50 text-green-400 text-xs px-3 py-2 rounded-full backdrop-blur-sm border border-green-400/30 animate-pulse">
+            <span className="hidden md:inline">Hover over countries to explore OSC data • </span>
+            <span className="md:hidden">Tap countries for OSC data</span>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative z-10">
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
         <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
@@ -27,10 +27,10 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-4">
+          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-4 sticky top-6">
             <nav className="space-y-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -55,7 +55,7 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 relative">
             {activeTab === 'profile' && (
               <div>
                 <h2 className="text-xl font-bold text-white mb-6">Profile Settings</h2>

@@ -29,7 +29,7 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="h-16 bg-black/60 backdrop-blur-sm border-b border-[#0B874F]/30 flex items-center justify-between px-6">
+    <header className="h-16 bg-black/60 backdrop-blur-sm border-b border-[#0B874F]/30 flex items-center justify-between px-6 relative z-50">
       {/* Search */}
       <div className="flex-1 max-w-md">
         <div className="relative">
@@ -53,7 +53,7 @@ export default function Topbar() {
         </button>
 
         {/* User Menu */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative z-50" ref={dropdownRef}>
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center space-x-3 p-2 rounded-lg hover:bg-[#0B874F]/10 transition-colors"
@@ -69,7 +69,7 @@ export default function Topbar() {
 
           {/* Dropdown Menu */}
           {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg shadow-xl z-[9999]">
+            <div className="absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-md border border-[#0B874F]/30 rounded-lg shadow-2xl z-[99999]">
               <div className="p-2">
                 <button className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:text-[#0B874F] hover:bg-[#0B874F]/10 rounded transition-colors">
                   <User className="w-4 h-4 mr-3" />

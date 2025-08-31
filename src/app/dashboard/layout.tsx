@@ -2,13 +2,33 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, Suspense } from "react";
 import Sidebar from "./components/sidebar";
 import Topbar from "./components/topbar";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+
+  // Preload common routes for faster navigation
+  useEffect(() => {
+    const preloadRoutes = async () => {
+      try {
+        await Promise.all([
+          router.prefetch('/dashboard/leaderboard'),
+          router.prefetch('/dashboard/projects'),
+          router.prefetch('/dashboard/events'),
+          router.prefetch('/dashboard/members'),
+        ]);
+      } catch (error) {
+        // Silently fail preloading
+      }
+    };
+    
+    if (user) {
+      preloadRoutes();
+    }
+  }, [user, router]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,10 +59,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <Sidebar />
         
         {/* Main Content */}
-        <div className="flex-1 ml-64">
+        <div className="flex-1 ml-64 min-h-screen">
           <Topbar />
-          <main className="p-6">
-            {children}
+          <main className="p-6 pb-20">
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-64">
+                <div className="text-[#0B874F] text-xl font-mono">Loading...</div>
+              </div>
+            }>
+              {children}
+            </Suspense>
           </main>
         </div>
       </div>

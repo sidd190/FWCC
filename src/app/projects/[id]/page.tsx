@@ -9,48 +9,48 @@ import { use } from "react"
 const projects = [
   {
     id: 1,
-    title: "DevFlow",
-    description: "A comprehensive developer workflow automation tool built with React and Node.js",
-    longDescription: `DevFlow is a revolutionary developer workflow automation platform that streamlines the entire development process from initial code commit to final deployment. Built with modern technologies and designed for scalability, DevFlow integrates seamlessly with existing development workflows.
+    title: "Dimsee",
+    description: "A powerful, ready-to-use authentication package for MERN stack applications",
+    longDescription: `Dimsee is a comprehensive authentication solution designed specifically for MERN stack developers. It provides a secure, customizable backend and a beautiful, themeable React frontend component to handle user registration, login, and session management with ease.
 
     Key Features:
-    • Automated Testing Pipeline - Run comprehensive tests on every commit
-    • Intelligent Code Review - AI-powered code analysis and suggestions  
-    • Deployment Automation - One-click deployments to multiple environments
-    • Team Collaboration Tools - Real-time collaboration and communication
-    • Performance Monitoring - Track application performance and user metrics
-    • Security Scanning - Automated vulnerability detection and reporting
+    • Local Authentication - Standard email/password signup and signin with secure password hashing
+    • OAuth 2.0 Integration - Seamless support for Google and GitHub social login
+    • Session Management - Secure, cookie-based sessions using JWT and express-session
+    • Route Protection - Middleware to protect your API routes and secure endpoints
+    • Themeable Frontend - Beautiful, customizable React components with multiple design themes
+    • Easy Configuration - Simple setup with minimal configuration required
 
-    DevFlow has been adopted by over 100 development teams worldwide and has processed more than 10,000 deployments. The platform reduces deployment time by 75% and increases code quality through automated reviews and testing.
+    Dimsee has been designed to eliminate the complexity of implementing authentication in MERN applications. It provides everything you need out of the box while maintaining flexibility for customization. The package includes both backend Express.js setup and frontend React components, making it perfect for developers who want to focus on building their core application features.
 
-    Whether you're a solo developer or part of a large team, DevFlow adapts to your workflow and helps you ship better code faster. Join our growing community of developers who are revolutionizing how software is built and deployed.`,
+    Whether you're building a SaaS product, internal tool, or learning project, Dimsee provides a solid foundation for user management with minimal setup time. Join the growing community of developers who are using Dimsee to secure their applications.`,
     category: "Web Development",
     status: "active",
     difficulty: "Advanced",
-    tech: ["React", "Node.js", "TypeScript", "Docker", "AWS", "PostgreSQL", "Redis", "GraphQL"],
-    github: "https://github.com/ufc/devflow",
-    demo: "https://devflow-demo.vercel.app",
-    image: "/devflow-dashboard-interface.png",
-    contributors: 12,
-    stars: 245,
-    forks: 67,
-    lastUpdate: "2024-02-28",
+    tech: ["React", "Node.js", "Express", "MongoDB", "JWT", "OAuth 2.0", "bcrypt.js", "express-session"],
+    github: "https://github.com/sidd190/Dimsee",
+    demo: "https://dimsee.netlify.app",
+    image: "/project-images/dimsee.jpg",
+    contributors: 3,
+    stars: 6,
+    forks: 2,
+    lastUpdate: "2024-01-15",
     featured: true,
-    color: "blue",
-    maintainer: "UFC Development Team",
+    color: "green",
+    maintainer: "Siddharth",
     license: "MIT",
-    version: "v2.1.0",
-    requirements: ["Node.js 18+", "Docker", "PostgreSQL", "Redis"],
+    version: "v0.6.2",
+    requirements: ["Node.js 16+", "MongoDB", "npm or yarn"],
     installation: [
-      "Clone the repository: git clone https://github.com/ufc/devflow.git",
-      "Install dependencies: npm install",
-      "Set up environment variables: cp .env.example .env",
-      "Start the development server: npm run dev",
+      "Install the package: npm install dimsee",
+      "Set up the backend: const { createAuthBackend } = require('dimsee/backend')",
+      "Configure your database: mongoUri: 'mongodb://localhost:27017/your-db'",
+      "Add to your React app: import { AuthProvider } from 'dimsee/frontend'",
     ],
     roadmap: [
-      { version: "v2.2.0", features: ["Advanced Analytics Dashboard", "Slack Integration"], status: "In Progress" },
-      { version: "v2.3.0", features: ["Mobile App", "API v2"], status: "Planned" },
-      { version: "v3.0.0", features: ["AI-Powered Insights", "Multi-Cloud Support"], status: "Future" },
+      { version: "v0.7.0", features: ["Additional OAuth Providers", "Enhanced Security Features"], status: "In Progress" },
+      { version: "v0.8.0", features: ["Advanced Customization", "Plugin System"], status: "Planned" },
+      { version: "v1.0.0", features: ["Enterprise Features", "Multi-Tenant Support"], status: "Future" },
     ],
   },
   // Add other projects here...
@@ -94,11 +94,11 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
         </motion.div>
 
         {/* Geometric Elements */}
-        <div className="absolute inset-0 z-5">
+        <div className="absolute inset-0 z-1">
           <motion.div
             className={`absolute top-20 right-20 w-24 h-24 bg-gradient-to-br ${
               colorClasses[project.color as keyof typeof colorClasses]
-            } transform rotate-45`}
+            } transform rotate-45 opacity-30`}
             animate={{
               rotate: [45, 55, 45],
               scale: [1, 1.1, 1],
@@ -110,7 +110,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
             }}
           />
           <motion.div
-            className="absolute bottom-32 left-20 w-16 h-32 bg-white transform -rotate-12"
+            className="absolute bottom-32 left-20 w-16 h-32 bg-white/20 backdrop-blur-sm transform -rotate-12"
             animate={{
               rotate: [-12, -8, -12],
               scaleY: [1, 1.1, 1],
@@ -124,9 +124,10 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           />
         </div>
 
-        <div className="relative z-10 h-full flex items-end">
+        <div className="relative z-20 h-full flex items-end">
           <div className="max-w-7xl mx-auto px-6 pb-20 w-full">
             <motion.div
+              className="relative z-30"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
@@ -159,9 +160,9 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 {project.title}
               </h1>
 
-              <p className="text-xl text-gray-300 mb-8 max-w-3xl">{project.description}</p>
+              <p className="text-xl text-gray-300 mb-8 max-w-3xl backdrop-blur-sm bg-black/20 p-4 rounded-lg border border-white/10">{project.description}</p>
 
-              <div className="flex flex-wrap gap-6 text-gray-300 mb-8">
+              <div className="flex flex-wrap gap-6 text-gray-300 mb-8 backdrop-blur-sm bg-black/20 p-4 rounded-lg border border-white/10">
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-400" />
                   <span className="font-bold">{project.stars} stars</span>
@@ -176,7 +177,11 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-red-400" />
-                  <span className="font-bold">Updated {new Date(project.lastUpdate).toLocaleDateString()}</span>
+                  <span className="font-bold">Updated {new Date(project.lastUpdate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</span>
                 </div>
               </div>
 

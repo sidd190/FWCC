@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import { Github, ExternalLink, Star, Plus, Users, GitPullRequest } from "lucide-react"
+import { Github, ExternalLink, Star, Plus, Users, GitPullRequest, Calendar, Code, Zap, Shield, Globe, ArrowRight, Home } from "lucide-react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
 import EnhancedButton from "../Components/enhanced-button"
@@ -10,182 +10,65 @@ import PageTransition from "../Components/page-transition"
 const projects = [
   {
     id: 1,
-    title: "DevFlow",
-    description: "A comprehensive developer workflow automation tool built with React and Node.js",
+    title: "Dimsee",
+    description: "A powerful, ready-to-use authentication package for MERN stack applications",
     longDescription:
-      "DevFlow streamlines the entire development process from code commit to deployment. Features include automated testing, code review assistance, deployment pipelines, and team collaboration tools.",
+      "Dimsee provides a secure, customizable backend and a beautiful, themeable React frontend component to handle user registration, login, and session management with ease. It supports local authentication, OAuth 2.0 (Google and GitHub), secure session management, and route protection.",
     category: "Web Development",
     status: "ongoing",
     difficulty: "Advanced",
-    tech: ["React", "Node.js", "TypeScript", "Docker", "AWS"],
-    github: "https://github.com/ufc/devflow",
-    demo: "https://devflow-demo.vercel.app",
-    image: "/devflow-dashboard-interface.png",
-    contributors: 12,
-    stars: 245,
-    forks: 67,
-    lastUpdate: "2024-02-28",
+    tech: ["React", "Node.js", "Express", "MongoDB", "JWT", "OAuth 2.0"],
+    github: "https://github.com/sidd190/Dimsee",
+    demo: "https://dimsee.netlify.app",
+    image: "/project-images/dimsee.jpg",
+    contributors: 3,
+    stars: 6,
+    forks: 2,
+    lastUpdate: "2024-01-15",
     featured: true,
     hologramData: {
-      components: ["Frontend UI", "Backend API", "Database Layer", "CI/CD Pipeline", "Authentication"],
+      components: ["React Frontend", "Express Backend", "MongoDB Database", "JWT Authentication", "OAuth Integration"],
       connections: [
-        { from: "Frontend UI", to: "Backend API" },
-        { from: "Backend API", to: "Database Layer" },
-        { from: "CI/CD Pipeline", to: "Backend API" },
-        { from: "Authentication", to: "Frontend UI" },
+        { from: "React Frontend", to: "Express Backend" },
+        { from: "Express Backend", to: "MongoDB Database" },
+        { from: "JWT Authentication", to: "Express Backend" },
+        { from: "OAuth Integration", to: "React Frontend" },
       ],
     },
-  },
-  {
-    id: 2,
-    title: "EcoTracker",
-    description: "Mobile app for tracking personal carbon footprint and environmental impact",
-    longDescription:
-      "EcoTracker helps users monitor their daily environmental impact through intuitive tracking features, personalized recommendations, and community challenges.",
-    category: "Mobile Development",
-    status: "ongoing",
-    difficulty: "Intermediate",
-    tech: ["React Native", "Firebase", "Python", "TensorFlow"],
-    github: "https://github.com/ufc/ecotracker",
-    demo: "https://ecotracker-app.com",
-    image: "/ecotracker-mobile-app.png",
-    contributors: 8,
-    stars: 189,
-    forks: 34,
-    lastUpdate: "2024-03-01",
-    featured: false,
-    hologramData: {
-      components: ["Mobile App", "ML Engine", "Data Analytics", "User Dashboard", "Notification System"],
-      connections: [
-        { from: "Mobile App", to: "ML Engine" },
-        { from: "ML Engine", to: "Data Analytics" },
-        { from: "Data Analytics", to: "User Dashboard" },
-        { from: "Notification System", to: "Mobile App" },
-      ],
-    },
-  },
-  {
-    id: 3,
-    title: "CodeMentor AI",
-    description: "AI-powered code review and mentoring assistant for new developers",
-    longDescription:
-      "CodeMentor AI provides intelligent code reviews, suggests improvements, and offers personalized learning paths for developers at all skill levels.",
-    category: "AI/ML",
-    status: "completed",
-    difficulty: "Advanced",
-    tech: ["Python", "OpenAI", "FastAPI", "React", "PostgreSQL"],
-    github: "https://github.com/ufc/codementor-ai",
-    demo: "https://codementor-ai.dev",
-    image: "/ai-code-review-assistant.png",
-    contributors: 15,
-    stars: 412,
-    forks: 89,
-    lastUpdate: "2024-03-05",
-    featured: true,
-    hologramData: {
-      components: ["AI Engine", "Code Parser", "Review System", "Learning Path", "User Interface"],
-      connections: [
-        { from: "Code Parser", to: "AI Engine" },
-        { from: "AI Engine", to: "Review System" },
-        { from: "Review System", to: "Learning Path" },
-        { from: "Learning Path", to: "User Interface" },
-      ],
-    },
-  },
-  {
-    id: 4,
-    title: "OpenLibrary",
-    description: "Digital library management system for educational institutions",
-    longDescription:
-      "OpenLibrary is a comprehensive library management system that digitizes book catalogs, manages lending, and provides advanced search capabilities.",
-    category: "Education",
-    status: "completed",
-    difficulty: "Intermediate",
-    tech: ["Vue.js", "Django", "PostgreSQL", "Redis"],
-    github: "https://github.com/ufc/openlibrary",
-    demo: "https://openlibrary-demo.edu",
-    image: "/digital-library-system.png",
-    contributors: 6,
-    stars: 156,
-    forks: 23,
-    lastUpdate: "2024-02-25",
-    featured: false,
-    hologramData: {
-      components: ["Web Interface", "Search Engine", "Database", "Cache Layer", "Admin Panel"],
-      connections: [
-        { from: "Web Interface", to: "Search Engine" },
-        { from: "Search Engine", to: "Database" },
-        { from: "Database", to: "Cache Layer" },
-        { from: "Admin Panel", to: "Database" },
-      ],
-    },
-  },
-  {
-    id: 5,
-    title: "CryptoWallet",
-    description: "Secure cryptocurrency wallet with multi-chain support",
-    longDescription:
-      "A secure, open-source cryptocurrency wallet supporting multiple blockchains with advanced security features and intuitive user interface.",
-    category: "Blockchain",
-    status: "ongoing",
-    difficulty: "Advanced",
-    tech: ["Rust", "React", "Web3", "Solidity"],
-    github: "https://github.com/ufc/cryptowallet",
-    demo: null,
-    image: "/crypto-wallet-security.png",
-    contributors: 9,
-    stars: 78,
-    forks: 12,
-    lastUpdate: "2024-03-03",
-    featured: false,
-    hologramData: {
-      components: ["Wallet Core", "Blockchain Interface", "Security Layer", "UI Components", "Transaction Engine"],
-      connections: [
-        { from: "UI Components", to: "Wallet Core" },
-        { from: "Wallet Core", to: "Security Layer" },
-        { from: "Security Layer", to: "Blockchain Interface" },
-        { from: "Transaction Engine", to: "Blockchain Interface" },
-      ],
-    },
-  },
-  {
-    id: 6,
-    title: "GameEngine2D",
-    description: "Lightweight 2D game engine built with modern C++ and OpenGL",
-    longDescription:
-      "A performant 2D game engine designed for indie developers, featuring modern C++ architecture, comprehensive tooling, and cross-platform support.",
-    category: "Game Development",
-    status: "completed",
-    difficulty: "Expert",
-    tech: ["C++", "OpenGL", "CMake", "Lua"],
-    github: "https://github.com/ufc/gameengine2d",
-    demo: "https://gameengine2d-showcase.com",
-    image: "/2d-game-engine-development.png",
-    contributors: 11,
-    stars: 334,
-    forks: 56,
-    lastUpdate: "2024-02-29",
-    featured: true,
-    hologramData: {
-      components: ["Rendering Engine", "Physics System", "Audio Manager", "Input Handler", "Scene Manager"],
-      connections: [
-        { from: "Scene Manager", to: "Rendering Engine" },
-        { from: "Physics System", to: "Rendering Engine" },
-        { from: "Input Handler", to: "Scene Manager" },
-        { from: "Audio Manager", to: "Scene Manager" },
-      ],
-    },
+    features: [
+      {
+        icon: Zap,
+        title: "Local Authentication",
+        description: "Standard email/password signup and signin with secure password hashing"
+      },
+      {
+        icon: Code,
+        title: "OAuth 2.0 Support",
+        description: "Seamless integration with Google and GitHub for social login"
+      },
+      {
+        icon: Globe,
+        title: "Session Management",
+        description: "Secure, cookie-based sessions using JWT and express-session"
+      },
+      {
+        icon: Shield,
+        title: "Route Protection",
+        description: "Middleware to protect your API routes and secure endpoints"
+      }
+    ],
+    stats: [
+      { label: "GitHub Stars", value: "6", color: "text-green-400" },
+      { label: "Contributors", value: "3", color: "text-blue-400" },
+      { label: "Forks", value: "2", color: "text-yellow-400" },
+      { label: "License", value: "MIT", color: "text-purple-400" }
+    ]
   },
 ]
 
 const categories = [
   "All",
   "Web Development",
-  "Mobile Development",
-  "AI/ML",
-  "Education",
-  "Blockchain",
-  "Game Development",
 ]
 
 export default function ProjectsPage() {
@@ -211,6 +94,20 @@ export default function ProjectsPage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-black text-white overflow-hidden" ref={containerRef}>
+        {/* Back to Home Button */}
+        <div className="fixed top-6 left-6 z-50">
+          <Link href="/">
+            <motion.div
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:text-green-400 transition-colors font-bold rounded-lg"
+              whileHover={{ scale: 1.05, x: -5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Home className="w-4 h-4" />
+              HOME
+            </motion.div>
+          </Link>
+        </div>
+
         {/* Hero Section */}
         <section className="relative h-screen flex items-center justify-center">
           <motion.div
@@ -221,27 +118,17 @@ export default function ProjectsPage() {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-12">
             <motion.div
               className="text-center mb-12"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-                Projects
+              <h1 className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent px-8 overflow-visible tracking-wider" style={{ fontFamily: "var(--font-orbitron)" }}>
+                PROJECTS
               </h1>
               <p className="text-xl text-gray-400 mb-8">Build the Future with Open Source</p>
-              <Link href="/submit/project">
-                <EnhancedButton
-                  variant="primary"
-                  size="lg"
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 text-black font-semibold px-8 py-4"
-                >
-                  <Plus className="w-5 h-5" />
-                  Propose Project
-                </EnhancedButton>
-              </Link>
             </motion.div>
 
             {/* Category Filter */}
@@ -270,65 +157,155 @@ export default function ProjectsPage() {
           </div>
         </section>
 
-        <section className="py-20 px-6">
+        {/* Featured Project Showcase */}
+        <section className="py-8 px-6">
           <div className="max-w-7xl mx-auto">
-            <motion.h2
-              className="text-4xl md:text-5xl font-bold text-center mb-16 text-green-400"
+            <motion.div
+              className="text-center mb-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              Ongoing Projects
-            </motion.h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-green-400">
+                Featured Project
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Our flagship project that's revolutionizing developer workflows
+              </p>
+            </motion.div>
 
-            <div className="grid lg:grid-cols-2 gap-12">
-              {ongoingProjects.map((project, index) => (
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Project Card */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+              >
                 <HologramProjectCard
-                  key={project.id}
-                  project={project}
-                  index={index}
-                  isSelected={selectedProject === project.id}
+                  project={ongoingProjects[0]}
+                  index={0}
+                  isSelected={selectedProject === ongoingProjects[0].id}
                   onSelect={setSelectedProject}
                 />
-              ))}
+              </motion.div>
+
+              {/* Project Details */}
+              <motion.div
+                className="space-y-8"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-4">{ongoingProjects[0].title}</h3>
+                  <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                    {ongoingProjects[0].longDescription}
+                  </p>
+                  
+                  {/* Tech Stack */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-green-400 mb-3">Tech Stack</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {ongoingProjects[0].tech.map((tech, index) => (
+                        <motion.span
+                          key={tech}
+                          className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm border border-green-500/50"
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          viewport={{ once: true }}
+                        >
+                          {tech}
+                        </motion.span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {ongoingProjects[0].stats.map((stat, index) => (
+                      <motion.div
+                        key={stat.label}
+                        className="text-center p-4 bg-black/30 rounded-lg border border-green-500/20"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                      >
+                        <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+                        <div className="text-gray-400 text-sm">{stat.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-4">
+                    <Link href={`/projects/${ongoingProjects[0].id}`}>
+                      <motion.button
+                        className="flex items-center gap-2 px-6 py-3 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        View Details
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.button>
+                    </Link>
+                    <motion.button
+                      className="flex items-center gap-2 px-6 py-3 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => window.open(ongoingProjects[0].github, "_blank")}
+                    >
+                      <Github className="w-4 h-4" />
+                      View on GitHub
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        <section className="py-20 px-6">
-          <div className="max-w-7xl mx-auto">
-            <motion.h2
-              className="text-4xl md:text-5xl font-bold text-center mb-16 text-green-400"
+        {/* Call to Action */}
+        <section className="py-8 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              Completed Projects
-            </motion.h2>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {completedProjects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-green-400">
+                Ready to Contribute?
+              </h2>
+              <p className="text-xl text-gray-400 mb-6">
+                Join our community of developers and help shape the future of authentication solutions
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link href="/projects/explore">
+                  <motion.button
+                    className="flex items-center gap-2 px-8 py-4 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Explore More Projects
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </Link>
+                <motion.button
+                  className="flex items-center gap-2 px-8 py-4 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => window.open(ongoingProjects[0].github, "_blank")}
                 >
-                  <Link href={`/projects/${project.id}`}>
-                    <HologramProjectCard
-                      project={project}
-                      index={index}
-                      isSelected={selectedProject === project.id}
-                      onSelect={setSelectedProject}
-                      isCompact={true}
-                    />
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+                  <Github className="w-5 h-5" />
+                  Contribute on GitHub
+                </motion.button>
+              </div>
+            </motion.div>
           </div>
         </section>
       </div>
@@ -380,9 +357,9 @@ function HologramProjectCard({ project, index, isSelected, onSelect, isCompact =
           }}
         >
           {/* Background Image */}
-          <div className="absolute inset-0 opacity-30">
-            <img src={project.image || "/placeholder.svg"} alt={project.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+          <div className="absolute inset-0 opacity-60">
+            <img src={project.image || "/placeholder.svg"} alt={project.title} className="w-full h-full object-cover object-center" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
           </div>
 
           {/* Hologram Grid */}

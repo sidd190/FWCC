@@ -16,7 +16,6 @@ type Contributor = {
 }
 
 type Props = {
-  repo?: string
   maxShown?: number // defaults to 36 (6x6 on lg)
 }
 
@@ -24,7 +23,7 @@ type Props = {
  * Matrix Contributors Wall: 6x6 on large screens with subtle row parallax and hover glow.
  * Adds data-fire-reactive so the fireball bursts when hovering contributor cards.
  */
-export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 36 }: Props = {}) {
+export default function ContributorsWall({ maxShown = 36 }: Props = {}) {
   const [data, setData] = useState<Contributor[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -41,7 +40,7 @@ export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 3
   useEffect(() => {
     let active = true
     setLoading(true)
-    fetch(`/api/contributors?repo=${encodeURIComponent(repo)}`)
+    fetch(`/api/contributors`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load contributors")
         return r.json()
@@ -56,7 +55,7 @@ export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 3
     return () => {
       active = false
     }
-  }, [repo, maxShown])
+  }, [maxShown])
 
   // chunk into rows of up to 6 for lg layout
   const rows = useMemo(() => {
@@ -115,13 +114,13 @@ export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 3
       rel="noreferrer"
       data-contr-item
       data-magnetic
-      className="group relative flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-white/[0.035] p-3 md:p-4 transition-transform duration-300 hover:scale-[1.02] hover:border-emerald-400/40"
+      className="group relative flex flex-col items-center gap-2 rounded-full border border-emerald-500/25 bg-white/[0.035] p-4 md:p-6 transition-transform duration-300 hover:scale-[1.02] hover:border-emerald-400/40"
       aria-label={`GitHub profile of ${c.login}`}
     >
-      <span className="relative block h-10 w-10 md:h-12 md:w-12 overflow-hidden rounded-full ring-1 ring-emerald-400/30">
+      <span className="relative block h-16 w-16 md:h-20 md:w-20 overflow-hidden rounded-full ring-2 ring-emerald-400/40">
         <Image src={c.avatar_url || "/placeholder.svg"} alt={`${c.login} avatar`} fill className="object-cover" />
       </span>
-      <span className="min-w-0">
+      <span className="text-center">
         <span className="block truncate font-[var(--font-space-grotesk)] text-sm md:text-base text-white/90">
           {c.login}
         </span>
@@ -129,7 +128,7 @@ export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 3
           {c.contributions} commits
         </span>
       </span>
-      <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-emerald-400/0 transition-colors group-hover:ring-emerald-400/30" />
+      <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-emerald-400/0 transition-colors group-hover:ring-emerald-400/30" />
     </a>
   )
 
@@ -161,12 +160,6 @@ export default function ContributorsWall({ repo = "vercel/next.js", maxShown = 3
 
   return (
     <div ref={containerRef} className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
-      <div className="mb-4">
-        <h3 className="font-[var(--font-space-grotesk)] text-xl md:text-2xl">Contributors Wall</h3>
-        <p className="text-emerald-200/70 font-[var(--font-plex-mono)] text-sm">
-          Repository: <span className="text-white/90">{repo}</span>
-        </p>
-      </div>
       {content}
     </div>
   )

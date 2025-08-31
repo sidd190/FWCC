@@ -4,7 +4,8 @@ import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google"
 import Link from "next/link"
 import { Suspense } from "react"
 import { cn } from "@/lib/utils"
-import FlowLines from "./components/flow-lines"
+import { Home } from "lucide-react"
+// import FlowLines from "./components/flow-lines"
 import SmoothScrollProvider from "./components/lenis-provider"
 import PhilosophyReveal from "./components/philosophy-reveal"
 import TeamScroller from "./components/team-scroller"
@@ -56,10 +57,21 @@ export default function AboutPageClient() {
       `}</style>
 
       <SmoothScrollProvider>
+        {/* Back to Home Button */}
+        <div className="fixed top-6 right-6 z-50">
+          <Link
+            href="/"
+            className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200 group"
+          >
+            <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+            <span className="text-sm font-mono">HOME</span>
+          </Link>
+        </div>
+
         <div className="relative">
           {/* Background centered neon lines */}
-          <FlowLines />
-          <ShortTrailCursor />
+          {/* <FlowLines /> */}
+          {/* <ShortTrailCursor /> */}
           {/* Sharp multicolor cursor trail */}
           {/* Magnetic hover for cards/buttons (optional, kept subtle) */}
 
@@ -126,7 +138,7 @@ export default function AboutPageClient() {
                       className="border-emerald-400/50 text-emerald-200 hover:bg-white/5 bg-transparent"
                       data-magnetic
                     >
-                      <Link href="https://discord.com" target="_blank" rel="noreferrer" className="spark-underline">
+                      <Link href="https://discord.gg/7HrTYAUpdd" target="_blank" rel="noreferrer" className="spark-underline">
                         Join Discord
                       </Link>
                     </Button>
@@ -158,7 +170,7 @@ export default function AboutPageClient() {
                       data-magnetic
                     >
                       <img
-                        src="/placeholder.svg?height=900&width=700"
+                        src="/about-images/students_collab.jpg"
                         alt="Students collaborating on open-source code"
                         className="h-full w-full object-cover"
                       />
@@ -171,21 +183,12 @@ export default function AboutPageClient() {
                       data-magnetic
                     >
                       <img
-                        src="/placeholder.svg?height=500&width=800"
+                        src="/about-images/terminal_run.jpg"
                         alt="Terminal running tests and builds"
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <div
-                      className="float-delay-2 relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-emerald-500/30"
-                      data-magnetic
-                    >
-                      <img
-                        src="/placeholder.svg?height=600&width=800"
-                        alt="Hackathon team celebrating a shipped feature"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -222,9 +225,17 @@ export default function AboutPageClient() {
                   </ul>
                 </div>
                 <div>
-                  <Suspense fallback={<div className="aspect-[4/3] w-full rounded-2xl bg-emerald-900/20" />}>
-                    <PhilosophyReveal />
-                  </Suspense>
+                  <div
+                    className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-emerald-500/30"
+                    data-magnetic
+                  >
+                    <img
+                      src="/about-images/foss.jpg"
+                      alt="Creative depiction of FOSS collaboration and open source principles"
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  </div>
                 </div>
               </div>
             </section>
@@ -245,7 +256,7 @@ export default function AboutPageClient() {
             {/* Contributors Wall */}
             <section
               aria-labelledby="contributors-heading"
-              className="relative mx-auto max-w-7xl px-6 md:px-12 lg:px-16 py-[12vh] md:py-[15vh]"
+              className="relative mx-auto max-w-7xl px-6 md:px-12 lg:px-16 py-[6vh] md:py-[8vh]"
             >
               <h2
                 id="contributors-heading"
@@ -257,7 +268,7 @@ export default function AboutPageClient() {
                 Live GitHub contributors from our ecosystem.
               </p>
               <Suspense fallback={<div className="h-40 w-full rounded-xl bg-emerald-900/20" />}>
-                <ContributorsWall repo="vercel/next.js" />
+                <ContributorsWall />
               </Suspense>
             </section>
 
@@ -302,16 +313,13 @@ export default function AboutPageClient() {
 
                 {/* Media column */}
                 <div className="grid gap-4">
-                  <Suspense fallback={<div className="aspect-[4/3] w-full rounded-2xl bg-emerald-900/20" />}>
-                    <PhilosophyReveal />
-                  </Suspense>
                   <div
-                    className="relative aspect-video overflow-hidden rounded-2xl ring-1 ring-emerald-500/30"
+                    className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-emerald-500/30"
                     data-magnetic
                   >
                     <img
-                      src="/placeholder.svg?height=600&width=1000"
-                      alt="Pair programming session during an on-campus sprint"
+                      src="/about-images/team.jpg"
+                      alt="Team collaboration and development in open source"
                       className="h-full w-full object-cover"
                     />
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

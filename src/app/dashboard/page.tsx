@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useAuth } from "@/lib/auth-context";
 import { 
   GitCommit, 
@@ -53,7 +54,7 @@ interface GitHubWeeklyStats {
   issuesClosed: number;
 }
 
-export default function DashboardPage() {
+const DashboardPage = React.memo(function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
@@ -70,6 +71,21 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
 
+      // Check cache first
+      const cachedData = sessionStorage.getItem('dashboard-data');
+      const cacheTime = sessionStorage.getItem('dashboard-data-time');
+      const now = Date.now();
+      
+      // Use cache if it's less than 5 minutes old
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 5 * 60 * 1000) {
+        const parsedData = JSON.parse(cachedData);
+        setStats(parsedData.stats);
+        setRecentActivity(parsedData.recentActivity);
+        setGitHubWeeklyStats(parsedData.githubWeeklyStats);
+        setLoading(false);
+        return;
+      }
+
       const [statsResponse, activitiesResponse] = await Promise.all([
         fetch('/api/dashboard/stats'),
         fetch('/api/dashboard/activities?limit=5')
@@ -82,9 +98,19 @@ export default function DashboardPage() {
       const statsData = await statsResponse.json();
       const activitiesData = await activitiesResponse.json();
 
-      setStats(statsData.stats);
-      setRecentActivity(statsData.recentActivity);
-      setGitHubWeeklyStats(statsData.githubWeeklyStats);
+      const dataToCache = {
+        stats: statsData.stats,
+        recentActivity: statsData.recentActivity || activitiesData.activities || [],
+        githubWeeklyStats: statsData.githubWeeklyStats
+      };
+
+      // Cache the data
+      sessionStorage.setItem('dashboard-data', JSON.stringify(dataToCache));
+      sessionStorage.setItem('dashboard-data-time', now.toString());
+
+      setStats(dataToCache.stats);
+      setRecentActivity(dataToCache.recentActivity);
+      setGitHubWeeklyStats(dataToCache.githubWeeklyStats);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
       setError('Failed to load dashboard data');
@@ -260,11 +286,11 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-white text-sm">{activity.message}</p>
+                    <p className="text-white text-sm">{activity.message || activity.description}</p>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-[#0B874F] text-xs">{activity.repo}</span>
+                      <span className="text-[#0B874F] text-xs">{activity.repo || activity.target}</span>
                       <span className="text-gray-400 text-xs">•</span>
-                      <span className="text-gray-400 text-xs">{activity.time}</span>
+                      <span className="text-gray-400 text-xs">{activity.time || activity.timestamp}</span>
                     </div>
                   </div>
                 </div>
@@ -327,4 +353,6 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+});
+
+export default DashboardPage;

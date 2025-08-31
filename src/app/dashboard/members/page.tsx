@@ -237,7 +237,11 @@ export default function MembersPage() {
                 )}
                 <div className="flex items-center space-x-2 text-sm text-gray-400">
                   <Calendar className="w-4 h-4" />
-                  <span>Joined {new Date(member.joinDate).toLocaleDateString()}</span>
+                                      <span>Joined {new Date(member.joinDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}</span>
                 </div>
               </div>
 

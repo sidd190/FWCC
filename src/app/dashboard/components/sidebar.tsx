@@ -28,7 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-black/80 backdrop-blur-sm border-r border-[#0B874F]/30 z-20">
+    <div className="fixed left-0 top-0 h-full w-64 bg-black/80 backdrop-blur-sm border-r border-[#0B874F]/30 z-30">
       {/* Logo */}
       <div className="p-6 border-b border-[#0B874F]/30">
         <h1 className="text-2xl font-bold text-[#0B874F]">
@@ -47,6 +47,7 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
               className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group ${
                 isActive
                   ? "bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50"
@@ -63,19 +64,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="absolute bottom-4 left-4 right-4 p-4 bg-[#0B874F]/10 rounded-lg border border-[#0B874F]/30">
-        <div className="text-xs text-gray-400">
-          <div className="flex items-center justify-between">
-            <span>Status:</span>
-            <span className="text-[#0B874F]">Online</span>
-          </div>
-          <div className="flex items-center justify-between mt-1">
-            <span>Version:</span>
-            <span className="text-[#0B874F]">v1.0.0</span>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 }

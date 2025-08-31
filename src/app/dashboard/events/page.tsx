@@ -232,7 +232,11 @@ export default function EventsPage() {
               <div className="space-y-3 mb-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-400">
                   <Calendar className="w-4 h-4" />
-                  <span>{new Date(event.date).toLocaleDateString()}</span>
+                                          <span>{new Date(event.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-gray-400">
                   <Clock className="w-4 h-4" />
