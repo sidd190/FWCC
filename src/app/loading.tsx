@@ -113,7 +113,7 @@ const LoadingPage = () => {
     pathPointsRef.current = calculatePathPoints();
   }, [calculatePathPoints]);
 
-  // Optimized animation loop using requestAnimationFrame with throttling
+  // Ultra-optimized animation loop with minimal re-renders
   const animate = useCallback((timestamp: number) => {
     if (!startTimeRef.current) {
       startTimeRef.current = timestamp;
@@ -123,10 +123,10 @@ const LoadingPage = () => {
     const duration = 10000; // 10 seconds
     const newProgress = Math.min((elapsed / duration) * 100, 100);
     
-    // Update progress with throttling to prevent excessive state updates
+    // Update progress with smoother transitions
     setProgress(prev => {
       const diff = Math.abs(newProgress - prev);
-      if (diff > 0.1) return newProgress; // Update only if significant change
+      if (diff > 0.2) return newProgress; // Lower threshold for smoother progress
       return prev;
     });
     
@@ -151,10 +151,10 @@ const LoadingPage = () => {
       const x = currentPoint.x + (nextPoint.x - currentPoint.x) * segmentProgress;
       const y = currentPoint.y + (nextPoint.y - currentPoint.y) * segmentProgress;
       
-      // Update arrow position with throttling
+      // Update arrow position with higher threshold
       setArrowPosition(prev => {
         const diff = Math.abs(x - prev.x) + Math.abs(y - prev.y);
-        if (diff > 0.1) return { x, y, angle: currentPoint.angle };
+        if (diff > 0.5) return { x, y, angle: currentPoint.angle };
         return prev;
       });
     }
@@ -261,12 +261,16 @@ const LoadingPage = () => {
               className="opacity-90"
             />
             
-            {/* Animated Arrow Following Path */}
+            {/* Optimized Animated Arrow Following Path */}
             <g
               transform={`translate(${arrowPosition.x}, ${arrowPosition.y}) rotate(${arrowPosition.angle})`}
-              className="transition-transform duration-75 ease-linear will-change-transform"
+              className="will-change-transform"
+              style={{
+                transform: `translate(${arrowPosition.x}px, ${arrowPosition.y}px) rotate(${arrowPosition.angle}deg)`,
+                transition: 'none' // Remove CSS transitions for better performance
+              }}
             >
-              {/* SVG Arrowhead */}
+              {/* Simplified SVG Arrowhead */}
               <path
                 d="M -1.5 0 L 0 -1.5 L 1.5 0 L 0 1.5 Z"
                 fill="url(#pathGradient)"
@@ -323,36 +327,40 @@ const LoadingPage = () => {
               ))}
             </div>
             
-            {/* Optimized Digital Rain Effect */}
+            {/* Optimized Digital Rain Effect - Reduced for better performance */}
             <div className="absolute inset-0 overflow-hidden">
-              {Array.from({ length: 12 }).map((_, i) => (
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
                   className="matrix-line"
                   style={{
-                    left: `${(i / 12) * 100}%`,
-                    animationDelay: `${(i % 6) * 0.3}s`,
+                    left: `${(i / 8) * 100}%`,
+                    animationDelay: `${(i % 4) * 0.4}s`,
                   }}
                 />
               ))}
             </div>
 
             
-            {/* Progress Fill with Circuit Pattern */}
+            {/* Smooth Progress Fill with Circuit Pattern */}
             <div
-              className="absolute left-0 top-0 h-full bg-gradient-to-r from-green-600/80 via-green-500/80 to-green-400/80 transition-all duration-75 ease-linear will-change-transform"
-              style={{ width: `${progress}%` }}
+              className="absolute left-0 top-0 h-full bg-gradient-to-r from-green-600/80 via-green-500/80 to-green-400/80 will-change-transform"
+              style={{ 
+                width: `${progress}%`,
+                transition: 'width 0.1s ease-out' // Smooth width transitions
+              }}
             >
-              {/* Simplified Circuit Pattern Overlay */}
-              <div className="absolute inset-0 opacity-40">
-                <svg className="w-full h-full" viewBox="0 0 100 16">
+              {/* Optimized Circuit Pattern Overlay */}
+              <div className="absolute inset-0 opacity-30">
+                <svg className="w-full h-full" viewBox="0 0 100 16" style={{ pointerEvents: 'none' }}>
                   <defs>
-                    <pattern id="circuit" x="0" y="0" width="10" height="8" patternUnits="userSpaceOnUse">
+                    <pattern id="circuit" x="0" y="0" width="8" height="6" patternUnits="userSpaceOnUse">
                       <path 
-                        d="M0,4 L2,4 L2,2 L4,2 L4,6 L6,6 L6,4 L8,4 L8,2 L10,2" 
+                        d="M0,3 L1.5,3 L1.5,1.5 L3,1.5 L3,4.5 L4.5,4.5 L4.5,3 L6,3 L6,1.5 L8,1.5" 
                         stroke="#00ff41" 
-                        strokeWidth="0.5" 
+                        strokeWidth="0.3" 
                         fill="none"
+                        opacity="0.6"
                       />
                     </pattern>
                   </defs>
@@ -360,8 +368,8 @@ const LoadingPage = () => {
                 </svg>
               </div>
               
-              {/* Scanning Line */}
-              <div className="absolute right-0 top-0 w-1 h-full bg-white opacity-80 animate-pulse-glow" />
+              {/* Smooth Scanning Line */}
+              <div className="absolute right-0 top-0 w-0.5 h-full bg-white opacity-90 progress-scan-line" />
             </div>
             
             {/* Simplified Hexagonal Progress Indicators */}

@@ -5,6 +5,7 @@ import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { cn } from "@/lib/utils"
+import { TiltedCard } from "@/components/ui/tilted-card"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -88,9 +89,7 @@ type Props = {
   members?: Member[]
 }
 
-/**
- * Fixed/pinned grid on desktop; simple grid on mobile.
- */
+
 export default function TeamScroller({ members = defaultMembers }: Props = {}) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const gridRef = useRef<HTMLDivElement | null>(null)
@@ -104,35 +103,55 @@ export default function TeamScroller({ members = defaultMembers }: Props = {}) {
   }, [])
 
   useEffect(() => {
-    if (!isDesktop) return
     const container = containerRef.current
     const grid = gridRef.current
     if (!container || !grid) return
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: "bottom+=120% top",
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-        },
-      })
-      tl.fromTo(
-        grid,
-        { opacity: 0.2, scale: 0.98, y: 20 },
-        { opacity: 1, scale: 1, y: 0, ease: "power2.out", duration: 0.6 },
-        0,
-      )
-    }, container)
+    if (isDesktop) {
 
-    return () => ctx.revert()
+      const ctx = gsap.context(() => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: container,
+            start: "top 90%", 
+            end: "top 70%",   
+            scrub: 0.3,       
+            pin: false,
+            anticipatePin: 0,
+          },
+        })
+        tl.fromTo(
+          grid,
+          { opacity: 0, scale: 0.98, y: 20 },
+          { opacity: 1, scale: 1, y: 0, ease: "power2.out", duration: 0.4 },
+          0,
+        )
+      }, container)
+
+      return () => ctx.revert()
+    } else {
+      // Mobile
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          grid,
+          { opacity: 0, y: 20 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.6, 
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: container,
+              start: "top 90%", 
+              once: true,
+            }
+          }
+        )
+      }, container)
+
+      return () => ctx.revert()
+    }
   }, [isDesktop])
-
-  const cardClass =
-    "group relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-white/[0.02] ring-1 ring-white/[0.02] hover:ring-emerald-400/20 transition-all"
 
   return (
     <div ref={containerRef} className="relative">
@@ -142,13 +161,12 @@ export default function TeamScroller({ members = defaultMembers }: Props = {}) {
       >
         <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((m, i) => (
-            <article 
-              key={i} 
-              className={cardClass} 
-              aria-label={`${m.name}, ${m.role}`} 
-              data-magnetic
+            <TiltedCard
+              key={i}
+              className="group relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-white/[0.02] ring-1 ring-white/[0.02] hover:ring-emerald-400/20 transition-all"
+              tiltIntensity={8}
+              scaleIntensity={1.05}
               onClick={() => {
-                
                 if (m.name === "Vikram Aditya Verma") {
                   window.open("https://x.com/ViXkrm", "_blank", "noopener,noreferrer")
                 }
@@ -159,38 +177,43 @@ export default function TeamScroller({ members = defaultMembers }: Props = {}) {
               }}
               style={{ cursor: (m.name === "Vikram Aditya Verma" || m.name === "Siddharth Bansal") ? "pointer" : "default" }}
             >
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src={m.img}
-                  alt={`${m.name} — ${m.role}`}
-                  fill
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  priority={i < 3}
-                  unoptimized
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
-              </div>
-              <div className="p-5">
-                <h3 
-                  className={`font-[var(--font-space-grotesk)] text-xl md:text-2xl font-semibold transition-colors duration-300 ${
-                    (m.name === "Vikram Aditya Verma" || m.name === "Siddharth Bansal")
-                      ? "group-hover:text-emerald-400 cursor-pointer" 
-                      : ""
-                  }`}
-                >
-                  {m.name}
-                </h3>
-                <p className="font-[var(--font-plex-mono)] text-emerald-200/90 text-sm md:text-base mb-2">{m.role}</p>
-                <p className="text-gray-400 text-sm leading-relaxed">{m.description}</p>
-                {(m.name === "Vikram Aditya Verma" || m.name === "Siddharth Bansal") && (
-                  <p className="text-emerald-400/40 text-xs mt-2 font-[var(--font-plex-mono)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    click here...
-                  </p>
-                )}
-              </div>
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-emerald-400/0 transition-colors duration-300 group-hover:ring-emerald-400/40" />
-            </article>
+              <article 
+                aria-label={`${m.name}, ${m.role}`} 
+                data-magnetic
+              >
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={m.img}
+                    alt={`${m.name} — ${m.role}`}
+                    fill
+                    className="object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={i < 3}
+                    unoptimized
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent transition-opacity duration-300 group-hover:opacity-80" />
+                </div>
+                <div className="p-5 relative z-10">
+                  <h3 
+                    className={`font-[var(--font-space-grotesk)] text-xl md:text-2xl font-semibold transition-all duration-300 group-hover:translate-y-[-2px] ${
+                      (m.name === "Vikram Aditya Verma" || m.name === "Siddharth Bansal")
+                        ? "group-hover:text-emerald-400 cursor-pointer" 
+                        : "group-hover:text-white/90"
+                    }`}
+                  >
+                    {m.name}
+                  </h3>
+                  <p className="font-[var(--font-plex-mono)] text-emerald-200/90 text-sm md:text-base mb-2 transition-all duration-300 group-hover:text-emerald-200">{m.role}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed transition-all duration-300 group-hover:text-gray-300">{m.description}</p>
+                  {(m.name === "Vikram Aditya Verma" || m.name === "Siddharth Bansal") && (
+                    <p className="text-emerald-400/60 text-xs mt-2 font-[var(--font-plex-mono)] opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-y-[-1px]">
+                      click here...
+                    </p>
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-emerald-400/0 transition-colors duration-300 group-hover:ring-emerald-400/40" />
+              </article>
+            </TiltedCard>
           ))}
         </div>
       </div>

@@ -12,6 +12,7 @@ import TeamScroller from "./components/team-scroller"
 import ContributorsWall from "./components/contributors-wall"
 import { Button } from "@/components/ui/button"
 import ShortTrailCursor from "./components/short-trail-cursor"
+import { TrueFocus } from "@/components/ui/true-focus"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"], 
@@ -103,15 +104,21 @@ export default function AboutPageClient() {
               `}</style>
               <div className="mx-auto grid w-full max-w-7xl items-center gap-10 md:grid-cols-2">
                 <div className="text-left">
-                  <h1
+                  <div
                     id="intro-heading"
-                    className="font-[var(--font-space-grotesk)] text-balance text-4xl sm:text-5xl md:text-7xl tracking-tight"
+                    className="font-[var(--font-space-grotesk)] mb-6"
                   >
-                    <span className="text-white">Open Source,</span>{" "}
-                    <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-white bg-clip-text text-transparent">
-                      Open Minds
-                    </span>
-                  </h1>
+                    <TrueFocus 
+                      sentence="Open Source, Open Minds"
+                      manualMode={false}
+                      blurAmount={3}
+                      borderColor="#10b981"
+                      glowColor="rgba(16, 185, 129, 0.6)"
+                      animationDuration={0.8}
+                      pauseBetweenAnimations={1.5}
+                      className="text-4xl sm:text-5xl md:text-7xl tracking-tight"
+                    />
+                  </div>
                   <p className="mt-6 text-pretty text-base sm:text-lg md:text-xl font-[var(--font-plex-mono)] text-emerald-200/90">
                     We are a college community of maintainers, designers, and tinkerers. We ship in public, learn
                     together, and choose growth and free will over gatekeeping. If you can imagine it, you can fork it.
@@ -279,12 +286,18 @@ export default function AboutPageClient() {
             >
               <div className="grid gap-10 lg:grid-cols-2">
                 <div>
-                  <h2
-                    id="philosophy-heading"
-                    className="font-[var(--font-space-grotesk)] text-3xl sm:text-4xl md:text-5xl spark-underline"
-                  >
-                    Philosophy of FOSS
-                  </h2>
+                  <div className="mb-6">
+                    <TrueFocus 
+                      sentence="Growth Free Will"
+                      manualMode={true}
+                      blurAmount={4}
+                      borderColor="#10b981"
+                      glowColor="rgba(16, 185, 129, 0.6)"
+                      animationDuration={0.6}
+                      pauseBetweenAnimations={0.5}
+                      className="text-2xl sm:text-3xl md:text-4xl font-[var(--font-space-grotesk)]"
+                    />
+                  </div>
                   <p className="mt-5 text-emerald-100/90 font-[var(--font-plex-mono)] leading-relaxed">
                     We believe in growth and free will. FOSS is our practice: contribute openly, share generously, and
                     own your learning journey. Code is a commons—our responsibility is to keep it healthy, welcoming,
