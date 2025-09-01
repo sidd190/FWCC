@@ -22,6 +22,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/locomotive-scroll": "^4.1.4",
+    "@types/three": "^0.179.0",
     "@types/ws": "^8.18.1",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
@@ -43,6 +44,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.3.1",
+    "three": "^0.179.1",
     "ws": "^8.18.3",
     "zod": "^4.0.17"
   },

@@ -93,7 +93,28 @@ export default function ProjectsPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-black text-white overflow-hidden" ref={containerRef}>
+      <div className="min-h-screen bg-black text-white overflow-hidden relative" ref={containerRef}>
+        {/* Animated Gradient Background */}
+        <div className="fixed inset-0 bg-gradient-to-br from-black via-[#001F1D] to-black animate-pulse opacity-40 z-0"></div>
+        
+        {/* Animated Grid Scan Lines */}
+        <div className="fixed inset-0 bg-[linear-gradient(0deg,transparent_0%,rgba(11,135,79,0.1)_50%,transparent_100%)] bg-[size:100%_4px] animate-pulse opacity-20 z-0"></div>
+
+        {/* Enhanced Hacker Grid System */}
+        {/* Primary Grid - Large squares */}
+        <div className="fixed inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(11,135,79,0.12)_25%,rgba(11,135,79,0.12)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.12)_75%,rgba(11,135,79,0.12)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(11,135,79,0.12)_25%,rgba(11,135,79,0.12)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.12)_75%,rgba(11,135,79,0.12)_76%,transparent_77%,transparent)] bg-[size:120px_120px] opacity-50 z-0"></div>
+        
+        {/* Secondary Grid - Medium squares */}
+        <div className="fixed inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(11,135,79,0.08)_25%,rgba(11,135,79,0.08)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.08)_75%,rgba(11,135,79,0.08)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(11,135,79,0.08)_25%,rgba(11,135,79,0.08)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.08)_75%,rgba(11,135,79,0.08)_76%,transparent_77%,transparent)] bg-[size:80px_80px] opacity-45 z-0"></div>
+        
+        {/* Tertiary Grid - Small squares */}
+        <div className="fixed inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(11,135,79,0.06)_25%,rgba(11,135,79,0.06)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.06)_75%,rgba(11,135,79,0.06)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(11,135,79,0.06)_25%,rgba(11,135,79,0.06)_26%,transparent_27%,transparent_74%,rgba(11,135,79,0.06)_75%,rgba(11,135,79,0.06)_76%,transparent_77%,transparent)] bg-[size:40px_40px] opacity-40 z-0"></div>
+        
+        {/* Diagonal Grid Pattern */}
+        <div className="fixed inset-0 bg-[linear-gradient(45deg,transparent_40%,rgba(11,135,79,0.04)_41%,rgba(11,135,79,0.04)_42%,transparent_43%,transparent_57%,rgba(11,135,79,0.04)_58%,rgba(11,135,79,0.04)_59%,transparent_60%),linear-gradient(-45deg,transparent_40%,rgba(11,135,79,0.04)_41%,rgba(11,135,79,0.04)_42%,transparent_43%,transparent_57%,rgba(11,135,79,0.04)_58%,rgba(11,135,79,0.04)_59%,transparent_60%)] bg-[size:100px_100px] opacity-35 z-0"></div>
+        
+        {/* Radial Grid Pattern */}
+        <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,rgba(11,135,79,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-30 z-0"></div>
         {/* Back to Home Button */}
         <div className="fixed top-6 left-6 z-50">
           <Link href="/">
