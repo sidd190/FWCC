@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { Home } from "lucide-react"
-import FlowLines from "./components/flow-lines"
+// import FlowLines from "./components/flow-lines"
 import PhilosophyReveal from "./components/philosophy-reveal"
 import TeamScroller from "./components/team-scroller"
 import ContributorsWall from "./components/contributors-wall"
@@ -73,7 +73,7 @@ export default function AboutPageClient() {
 
       <div className="relative">
         {/* Background centered neon lines */}
-        <FlowLines />
+        {/* <FlowLines /> */}
         <ShortTrailCursor />
         {/* Sharp multicolor cursor trail */}
         {/* Magnetic hover for cards/buttons (optional, kept subtle) */}

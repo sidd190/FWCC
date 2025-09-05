@@ -56,7 +56,7 @@ export function Header() {
             letterSpacing: '0.25em'
           }}
         >
-          USAR FOSS CLUB
+          UFC
         </h1>
         <p
           className="text-xl font-mono font-medium"
