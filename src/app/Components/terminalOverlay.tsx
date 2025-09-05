@@ -7,10 +7,10 @@ export function TerminalOverlay() {
   const router = useRouter();
   const [input, setInput] = useState('');
   const [lines, setLines] = useState([
-    '> Initializing OSDC Coreverse...',
+    '> Initializing UFC Coreverse...',
     '> Connection established',
     '> Loading global OSC data...',
-    '> System ready. Type commands below:',
+    '> System ready. Try the command "cd about":',
   ]);
 
   const handleSubmit = (e) => {
@@ -118,7 +118,7 @@ export function TerminalOverlay() {
             className="ml-4 text-base font-bold"
             style={{ color: '#4A90E2' }}
           >
-            /osdc/community/activity_feed
+            /ufc/community/activity_feed
           </span>
         </div>
 

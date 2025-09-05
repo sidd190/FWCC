@@ -155,9 +155,9 @@ export default function AboutPageClient() {
 
                   <div className="mt-10 grid grid-cols-3 gap-4">
                     {[
-                      { k: "Members", v: "800+" },
-                      { k: "Repos", v: "45" },
-                      { k: "Contributors", v: "1.2k+" },
+                      { k: "Members", v: "45+" },
+                      { k: "Repos", v: "TBM" },
+                      { k: "Contributors", v: "Inviting" },
                     ].map((s, i) => (
                       <div
                         key={i}
