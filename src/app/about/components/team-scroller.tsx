@@ -36,7 +36,7 @@ const defaultMembers: Member[] = [
     description: "Supporting technical leadership and mentoring developers in cutting-edge technologies."
   },
   { 
-    name: "Avish", 
+    name: "Avish Chaudhary", 
     role: "Co Tech Lead", 
     img: "/team-images/avish.jpg",
     description: "Contributing technical expertise and helping shape the future of our development practices."
@@ -48,7 +48,7 @@ const defaultMembers: Member[] = [
     description: "Managing public relations and building strong connections with the broader developer community."
   },
   { 
-    name: "Ananya Sharma", 
+    name: "Ananya Jain", 
     role: "External Affairs Lead", 
     img: "/team-images/ananya.jpg",
     description: "Forging partnerships and representing our community in external collaborations and events."
@@ -72,7 +72,7 @@ const defaultMembers: Member[] = [
     description: "Supporting core initiatives and contributing to the technical foundation of our open source projects."
   },
   { 
-    name: "Piyush Bansal", 
+    name: "Piyush Gupta", 
     role: "Core Member", 
     img: "/team-images/piyush.jpg",
     description: "Collaborating closely with the President to drive community initiatives and foster collaboration."
