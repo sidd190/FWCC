@@ -20,11 +20,6 @@ export const Menu = () => {
               Events
             </Link>
           </li>
-          <li>
-            <Link href="/login" className="hover:text-[#0B874F] transition">
-              Login
-            </Link>
-          </li>
         </ul>
       </nav>
     </div>

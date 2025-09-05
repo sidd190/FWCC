@@ -1,8 +1,9 @@
 "use client";
 import Globe from "react-globe.gl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GlobeComponent = () => {
+  const globeRef = useRef();
   const [countries, setCountries] = useState([]);
   const [hoverD, setHoverD] = useState();
 
@@ -14,29 +15,28 @@ const GlobeComponent = () => {
           const countryName = country.properties.NAME || country.properties.name || '';
           let contributions = 0;
 
-          // More accurate OSC data based on real GitHub statistics and developer populations
           if (countryName === 'United States') {
-            contributions = Math.floor(Math.random() * 500000 + 2500000); // 2.5M-3M
+            contributions = Math.floor(Math.random() * 500000 + 2500000);
           } else if (countryName === 'China') {
-            contributions = Math.floor(Math.random() * 300000 + 1200000); // 1.2M-1.5M
+            contributions = Math.floor(Math.random() * 300000 + 1200000);
           } else if (countryName === 'India') {
-            contributions = Math.floor(Math.random() * 200000 + 800000); // 800k-1M
+            contributions = Math.floor(Math.random() * 200000 + 800000);
           } else if (['Germany', 'United Kingdom'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 150000 + 500000); // 500k-650k
+            contributions = Math.floor(Math.random() * 150000 + 500000);
           } else if (['Japan', 'Canada', 'France'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 100000 + 300000); // 300k-400k
+            contributions = Math.floor(Math.random() * 100000 + 300000);
           } else if (['Brazil', 'Russia', 'South Korea'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 80000 + 200000); // 200k-280k
+            contributions = Math.floor(Math.random() * 80000 + 200000);
           } else if (['Netherlands', 'Australia', 'Sweden', 'Switzerland', 'Israel'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 60000 + 120000); // 120k-180k
+            contributions = Math.floor(Math.random() * 60000 + 120000);
           } else if (['Italy', 'Spain', 'Poland', 'Singapore', 'Norway', 'Denmark'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 40000 + 80000); // 80k-120k
+            contributions = Math.floor(Math.random() * 40000 + 80000);
           } else if (['Ukraine', 'Belgium', 'Finland', 'Austria', 'Ireland'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 30000 + 50000); // 50k-80k
+            contributions = Math.floor(Math.random() * 30000 + 50000);
           } else if (['Czech Republic', 'Portugal', 'Hungary', 'Romania'].includes(countryName)) {
-            contributions = Math.floor(Math.random() * 20000 + 30000); // 30k-50k
+            contributions = Math.floor(Math.random() * 20000 + 30000);
           } else {
-            contributions = Math.floor(Math.random() * 15000 + 5000); // 5k-20k
+            contributions = Math.floor(Math.random() * 15000 + 5000);
           }
 
           return {
@@ -57,24 +57,43 @@ const GlobeComponent = () => {
       });
   }, []);
 
+  // 🎡 Auto-Rotation Effect
+  useEffect(() => {
+    if (!globeRef.current) return;
+
+    let animationFrameId: number;
+    const rotate = () => {
+      if (globeRef.current) {
+        // Control rotation speed here (smaller = slower)
+        globeRef.current.controls().autoRotate = true;
+        globeRef.current.controls().autoRotateSpeed = 0.6; // slow & smooth
+      }
+      animationFrameId = requestAnimationFrame(rotate);
+    };
+
+    rotate();
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
   const getColor = (contributions) => {
     if (!contributions) return '#000000';
     if (contributions >= 500000) {
-      return '#0B874F'; // FOSS Mint - Very High
+      return '#0B874F';
     } else if (contributions >= 200000) {
-      return '#2D8F5A'; // Bright Green - High
+      return '#2D8F5A';
     } else if (contributions >= 80000) {
-      return '#4A6741'; // Medium Green - Medium
+      return '#4A6741';
     } else if (contributions >= 30000) {
-      return '#F5A623'; // Byte Yellow - Low-Medium
+      return '#F5A623';
     } else {
-      return '#E94B3C'; // Flame Red - Low
+      return '#E94B3C';
     }
   };
 
   return (
     <div className="w-full h-full flex items-center justify-center">
       <Globe
+        ref={globeRef}
         width={750}
         height={750}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
@@ -87,13 +106,13 @@ const GlobeComponent = () => {
         polygonStrokeColor={() => '#0B874F'}
         polygonLabel={({ properties: d }) => `
           <div style="
-            background: rgba(0, 0, 0, 0.95); 
-            padding: 16px; 
-            border-radius: 12px; 
-            color: #FFFFFF; 
-            border: 3px solid #4A90E2; 
-            font-family: 'Courier New', monospace; 
-            backdrop-filter: blur(15px); 
+            background: rgba(0, 0, 0, 0.95);
+            padding: 16px;
+            border-radius: 12px;
+            color: #FFFFFF;
+            border: 3px solid #4A90E2;
+            font-family: 'Courier New', monospace;
+            backdrop-filter: blur(15px);
             box-shadow: 0 0 30px rgba(74, 144, 226, 0.6), 0 0 60px rgba(74, 144, 226, 0.3);
             font-size: 14px;
             font-weight: bold;

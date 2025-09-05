@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { GitBranch, Plus, ExternalLink, Users, Calendar, Code, Settings, CheckCircle, Clock, Archive } from "lucide-react";
+import { GitBranch, Plus, ExternalLink, Users, Calendar, Code, Settings, CheckCircle, Clock, Archive, X } from "lucide-react";
 
 interface Project {
   id: string;

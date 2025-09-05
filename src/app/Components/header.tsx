@@ -6,82 +6,68 @@ export function Header() {
       <style jsx>{`
         @keyframes glowPulse {
           0%, 100% {
-            text-shadow: 
-              0 0 5px #ffffff,
-              0 0 10px #ffffff,
-              0 0 15px #ffffff,
-              0 0 20px #ffffff,
-              0 0 25px #ffffff,
-              0 0 30px #ffffff,
-              0 0 35px #ffffff,
-              0 0 40px #ffffff,
-              0 0 45px #ffffff,
-              0 0 50px #ffffff;
+            text-shadow:
+              0 0 10px #00ffb2,
+              0 0 20px #00ffb2,
+              0 0 40px #00ffb2,
+              0 0 60px #00ffb2,
+              0 0 80px #00ffb2;
           }
           50% {
-            text-shadow: 
-              0 0 10px #ffffff,
-              0 0 20px #ffffff,
-              0 0 30px #ffffff,
-              0 0 40px #ffffff,
-              0 0 50px #ffffff,
-              0 0 60px #ffffff,
-              0 0 70px #ffffff,
-              0 0 80px #ffffff,
-              0 0 90px #ffffff,
-              0 0 100px #ffffff;
+            text-shadow:
+              0 0 20px #00ffd5,
+              0 0 40px #00ffd5,
+              0 0 60px #00ffd5,
+              0 0 80px #00ffd5,
+              0 0 100px #00ffd5;
           }
         }
-        
+
+        @keyframes gradientShine {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
         .ufc-glow {
-          animation: glowPulse 3s ease-in-out infinite;
-          -webkit-text-stroke: 2px #ffffff;
-          text-stroke: 2px #ffffff;
+          animation: glowPulse 2.5s ease-in-out infinite;
+          -webkit-text-stroke: 1.5px #ffffff;
+          text-stroke: 1.5px #ffffff;
+          background: linear-gradient(90deg, #00ffb2, #00ffd5, #0bff7f);
+          background-size: 200% 200%;
+          animation: glowPulse 2.5s ease-in-out infinite, gradientShine 6s linear infinite;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
       `}</style>
+
       <div className="text-center">
         {/* Main Title */}
-        <h1 className="text-6xl font-black mb-4 tracking-widest ufc-glow" style={{ 
-          color: '#0B874F',
-          fontFamily: '"IBM Plex Mono", monospace',
-          letterSpacing: '0.2em'
-        }}>
-          FOSSER
+        <h1
+          className="text-6xl font-black mb-4 tracking-widest ufc-glow"
+          style={{
+            fontFamily: '"IBM Plex Mono", monospace',
+            letterSpacing: '0.25em'
+          }}
+        >
+          USAR FOSS CLUB
         </h1>
-        <p className="text-xl font-mono font-medium" style={{ 
-          color: '#FFFFFF',
-          textShadow: '0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4)',
-          opacity: 1
-        }}>
+        <p
+          className="text-xl font-mono font-medium"
+          style={{
+            color: '#FFFFFF',
+            textShadow: '0 0 15px rgba(255, 255, 255, 0.8), 0 0 35px rgba(0, 255, 179, 0.6)',
+            opacity: 1
+          }}
+        >
           Open Source, Open Minds. Building the future together.
         </p>
-        
-        {/* GitHub Feed and Join button - top right */}
-        <div className="absolute top-8 right-8 flex items-center gap-4">
-          <span className="text-sm font-mono" style={{ color: '#F5A623' }}>GitHub Feed</span>
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="px-6 py-2 rounded font-mono text-sm font-medium transition-all duration-300 border-2 hover:scale-105 cursor-pointer"
-            style={{ 
-              backgroundColor: '#0B874F', 
-              color: '#000000',
-              borderColor: '#0B874F',
-              boxShadow: '0 0 10px rgba(11, 135, 79, 0.3)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#000000'
-              e.target.style.color = '#0B874F'
-              e.target.style.boxShadow = '0 0 20px rgba(11, 135, 79, 0.5)'
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#0B874F'
-              e.target.style.color = '#000000'
-              e.target.style.boxShadow = '0 0 10px rgba(11, 135, 79, 0.3)'
-            }}
-          >
-            Join the Flow
-          </button>
-        </div>
       </div>
     </header>
   )

@@ -35,7 +35,9 @@ model User {
   activities      Activity[]
   githubStats     GitHubStats?
   createdProjects Project[] @relation("ProjectCreator")
+  approvedProjects Project[] @relation("ProjectApprover")
   createdEvents   Event[]   @relation("EventCreator")
+  approvedEvents  Event[]   @relation("EventApprover")
   achievements    UserAchievement[]
   badges          UserBadge[]
   notifications   Notification[]
@@ -44,20 +46,25 @@ model User {
 }
 
 model Project {
-  id          String        @id @default(cuid())
-  name        String
-  description String
-  repoUrl     String?
-  language    String
-  status      ProjectStatus @default(PLANNING)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  name          String
+  description   String
+  repoUrl       String?
+  language      String
+  status        ProjectStatus @default(PLANNING)
+  approvalStatus ApprovalStatus @default(PENDING)
+  rejectionReason String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  approvedAt    DateTime?
+  approvedById  String?
   
   // Relations
-  creatorId   String
-  creator     User            @relation("ProjectCreator", fields: [creatorId], references: [id])
-  members     ProjectMember[]
-  activities  Activity[]
+  creatorId     String
+  creator       User            @relation("ProjectCreator", fields: [creatorId], references: [id])
+  approvedBy    User?           @relation("ProjectApprover", fields: [approvedById], references: [id])
+  members       ProjectMember[]
+  activities    Activity[]
   
   @@map("projects")
 }
@@ -78,22 +85,27 @@ model ProjectMember {
 }
 
 model Event {
-  id           String    @id @default(cuid())
-  title        String
-  description  String
-  date         DateTime
-  location     String
-  maxAttendees Int
-  type         EventType
-  status       EventStatus @default(UPCOMING)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String      @id @default(cuid())
+  title           String
+  description     String
+  date            DateTime
+  location        String
+  maxAttendees    Int
+  type            EventType
+  status          EventStatus @default(UPCOMING)
+  approvalStatus  ApprovalStatus @default(PENDING)
+  rejectionReason String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  approvedAt      DateTime?
+  approvedById    String?
   
   // Relations
-  creatorId    String
-  creator      User            @relation("EventCreator", fields: [creatorId], references: [id])
-  attendees    EventAttendee[]
-  activities   Activity[]
+  creatorId       String
+  creator         User            @relation("EventCreator", fields: [creatorId], references: [id])
+  approvedBy      User?           @relation("EventApprover", fields: [approvedById], references: [id])
+  attendees       EventAttendee[]
+  activities      Activity[]
   
   @@map("events")
 }
@@ -190,6 +202,18 @@ enum ActivityType {
   PROJECT_CREATE
   MEMBER_JOIN
   ACHIEVEMENT
+  PROJECT_PROPOSAL
+  EVENT_PROPOSAL
+  PROJECT_APPROVED
+  PROJECT_REJECTED
+  EVENT_APPROVED
+  EVENT_REJECTED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 // Gamification Models
 model Achievement {
