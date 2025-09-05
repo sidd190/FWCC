@@ -179,7 +179,7 @@ export default function ProjectsPage() {
         </section>
 
         {/* Featured Project Showcase */}
-        <section className="py-8 px-6">
+        <section className="py-8 px-6 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.div
               className="text-center mb-8"
@@ -263,22 +263,24 @@ export default function ProjectsPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-4 relative z-20">
                     <Link href={`/projects/${ongoingProjects[0].id}`}>
                       <motion.button
-                        className="flex items-center gap-2 px-6 py-3 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors"
+                        className="flex items-center gap-2 px-6 py-3 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors relative z-20"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{ pointerEvents: 'auto' }}
                       >
                         View Details
                         <ArrowRight className="w-4 h-4" />
                       </motion.button>
                     </Link>
                     <motion.button
-                      className="flex items-center gap-2 px-6 py-3 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors"
+                      className="flex items-center gap-2 px-6 py-3 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors relative z-20"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => window.open(ongoingProjects[0].github, "_blank")}
+                      style={{ pointerEvents: 'auto' }}
                     >
                       <Github className="w-4 h-4" />
                       View on GitHub
@@ -291,7 +293,7 @@ export default function ProjectsPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="py-8 px-6">
+        <section className="py-8 px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -305,22 +307,24 @@ export default function ProjectsPage() {
               <p className="text-xl text-gray-400 mb-6">
                 Join our community of developers and help shape the future of authentication solutions
               </p>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap justify-center gap-4 relative z-20">
                 <Link href="/projects/explore">
                   <motion.button
-                    className="flex items-center gap-2 px-8 py-4 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors"
+                    className="flex items-center gap-2 px-8 py-4 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition-colors relative z-20"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     Explore More Projects
                     <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </Link>
                 <motion.button
-                  className="flex items-center gap-2 px-8 py-4 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors"
+                  className="flex items-center gap-2 px-8 py-4 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/10 transition-colors relative z-20"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => window.open(ongoingProjects[0].github, "_blank")}
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <Github className="w-5 h-5" />
                   Contribute on GitHub
