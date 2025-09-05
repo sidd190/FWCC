@@ -55,28 +55,28 @@ export default function Page() {
             }}
           >
             <h4 className="text-xs md:text-sm font-bold mb-2 md:mb-3" style={{ color: '#F5A623' }}>
-              OSC Levels
+              FOSS Activity
             </h4>
             <div className="space-y-1 md:space-y-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#2D8F5A' }}></div>
-                <span style={{ color: '#FFFFFF' }} className="text-xs">Very High (500k+)</span>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Very High (1M+ repos)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#4A6741' }}></div>
-                <span style={{ color: '#FFFFFF' }} className="text-xs">High (200k-500k)</span>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">High (500k-1M repos)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#6B7A3A' }}></div>
-                <span style={{ color: '#FFFFFF' }} className="text-xs">Medium (80k-200k)</span>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Medium (100k-500k repos)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#8B6B2A' }}></div>
-                <span style={{ color: '#FFFFFF' }} className="text-xs">Low-Med (30k-80k)</span>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Low-Med (10k-100k repos)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: '#8B3A3A' }}></div>
-                <span style={{ color: '#FFFFFF' }} className="text-xs">Low (&lt;30k)</span>
+                <span style={{ color: '#FFFFFF' }} className="text-xs">Low (&lt;10k repos)</span>
               </div>  
             </div>
           </div>
@@ -85,8 +85,8 @@ export default function Page() {
         {/* Interactive Hint */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className="bg-black/50 text-green-400 text-xs px-3 py-2 rounded-full backdrop-blur-sm border border-green-400/30 animate-pulse">
-            <span className="hidden md:inline">Hover over countries to explore OSC data • </span>
-            <span className="md:hidden">Tap countries for OSC data</span>
+            <span className="hidden md:inline">Hover over countries to explore FOSS activity • </span>
+            <span className="md:hidden">Tap countries for FOSS data</span>
           </div>
         </div>
       </div>

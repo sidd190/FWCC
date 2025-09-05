@@ -12,9 +12,6 @@ export async function GET(request: NextRequest) {
       take: limit,
       skip: offset,
       orderBy: { joinedAt: 'desc' },
-      include: {
-        githubStats: true
-      },
       select: {
         id: true,
         name: true,

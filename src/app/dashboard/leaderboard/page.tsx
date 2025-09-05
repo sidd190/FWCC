@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Trophy, Medal, Award, TrendingUp, GitCommit, GitPullRequest, Star } from "lucide-react";
+import { Trophy, Medal, Award, TrendingUp, GitCommit, GitPullRequest, Star, BarChart3, Crown } from "lucide-react";
 
 interface LeaderboardUser {
   id: string;
@@ -116,39 +116,39 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+      <div className="bg-gradient-to-r from-black/60 to-[#0B874F]/10 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
-              <Trophy className="w-8 h-8 mr-3" />
-              Leaderboard
+            <h1 className="text-4xl font-bold text-white mb-2 flex items-center">
+              <Trophy className="w-10 h-10 mr-4 text-yellow-500" />
+              Community Leaderboard
             </h1>
-            <p className="text-gray-400">
-              Top contributors in our community
+            <p className="text-gray-300 text-lg">
+              Celebrating our top contributors and their amazing work
             </p>
           </div>
           
           {/* Sort Options */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <button
               onClick={() => setSortBy('contributions')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                 sortBy === 'contributions'
-                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
-                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+                  ? 'bg-[#0B874F] text-black shadow-lg shadow-[#0B874F]/30'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F] hover:bg-[#0B874F]/10'
               }`}
             >
               <TrendingUp className="w-4 h-4 inline mr-2" />
-              Total
+              Total Points
             </button>
             <button
               onClick={() => setSortBy('commits')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                 sortBy === 'commits'
-                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
-                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+                  ? 'bg-[#0B874F] text-black shadow-lg shadow-[#0B874F]/30'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F] hover:bg-[#0B874F]/10'
               }`}
             >
               <GitCommit className="w-4 h-4 inline mr-2" />
@@ -156,18 +156,65 @@ export default function LeaderboardPage() {
             </button>
             <button
               onClick={() => setSortBy('pullRequests')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                 sortBy === 'pullRequests'
-                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
-                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+                  ? 'bg-[#0B874F] text-black shadow-lg shadow-[#0B874F]/30'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F] hover:bg-[#0B874F]/10'
               }`}
             >
               <GitPullRequest className="w-4 h-4 inline mr-2" />
-              PRs
+              Pull Requests
             </button>
           </div>
         </div>
       </div>
+
+      {/* Top 3 Podium */}
+      {users.length >= 3 && (
+        <div className="bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-8">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <Crown className="w-6 h-6 mr-3 text-yellow-500" />
+            Top Performers
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {users.slice(0, 3).map((user, index) => {
+              const podiumColors = ['text-yellow-500', 'text-gray-400', 'text-amber-600'];
+              const bgColors = ['bg-yellow-500/20', 'bg-gray-400/20', 'bg-amber-600/20'];
+              const borderColors = ['border-yellow-500/30', 'border-gray-400/30', 'border-amber-600/30'];
+              
+              return (
+                <div
+                  key={user.id}
+                  className={`${bgColors[index]} ${borderColors[index]} border-2 rounded-xl p-6 text-center hover:scale-105 transition-all duration-300`}
+                >
+                  <div className="relative mb-4">
+                    <div className="w-20 h-20 mx-auto bg-black/30 rounded-full flex items-center justify-center overflow-hidden">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[#0B874F] text-2xl font-bold">
+                          {user.name?.charAt(0) || '?'}
+                        </span>
+                      )}
+                    </div>
+                    <div className={`absolute -top-2 -right-2 w-8 h-8 ${bgColors[index]} ${borderColors[index]} border rounded-full flex items-center justify-center`}>
+                      {getRankIcon(user.rank)}
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-1">{user.name}</h3>
+                  {user.githubUsername && (
+                    <p className="text-sm text-gray-400 mb-3">@{user.githubUsername}</p>
+                  )}
+                  <div className={`text-3xl font-bold ${podiumColors[index]} mb-2`}>
+                    {user.points}
+                  </div>
+                  <p className="text-sm text-gray-400">Total Points</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Leaderboard */}
       <div className="space-y-4">

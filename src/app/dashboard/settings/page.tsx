@@ -79,14 +79,14 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
-          <Settings className="w-8 h-8 mr-3" />
+      <div className="bg-gradient-to-r from-black/60 to-[#0B874F]/10 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-8">
+        <h1 className="text-4xl font-bold text-white mb-2 flex items-center">
+          <Settings className="w-10 h-10 mr-4 text-[#0B874F]" />
           Settings
         </h1>
-        <p className="text-gray-400">
+        <p className="text-gray-300 text-lg">
           Manage your account preferences and integrations
         </p>
       </div>

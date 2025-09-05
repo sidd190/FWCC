@@ -153,8 +153,10 @@ model Activity {
 // Enums
 enum Role {
   ADMIN
+  MAINTAINER
   MODERATOR
   MEMBER
+  VOLUNTEER
 }
 
 enum ProjectStatus {

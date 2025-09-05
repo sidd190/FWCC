@@ -224,15 +224,25 @@ const DashboardPage = React.memo(function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-[#0B874F] mb-2">
-          Welcome back, {user?.name?.split(' ')[0] || 'Developer'}!
-        </h1>
-        <p className="text-gray-400">
-          Here's what's happening with your projects and contributions.
-        </p>
+      <div className="bg-gradient-to-r from-black/60 to-[#0B874F]/10 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Welcome back, <span className="text-[#0B874F]">{user?.name?.split(' ')[0] || 'Developer'}</span>! 👋
+            </h1>
+            <p className="text-gray-300 text-lg">
+              Here's what's happening with your projects and contributions.
+            </p>
+          </div>
+          {user?.githubUsername && (
+            <div className="text-right">
+              <p className="text-sm text-gray-400">Connected as</p>
+              <p className="text-[#0B874F] font-medium">@{user.githubUsername}</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -242,30 +252,31 @@ const DashboardPage = React.memo(function DashboardPage() {
           return (
             <div
               key={index}
-              className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200"
+              className="group bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-6 hover:border-[#0B874F]/60 hover:shadow-lg hover:shadow-[#0B874F]/20 transition-all duration-300 hover:scale-105"
             >
               <div className="flex items-center justify-between mb-4">
                 <div
-                  className="p-3 rounded-lg"
+                  className="p-3 rounded-xl group-hover:scale-110 transition-transform duration-300"
                   style={{ backgroundColor: `${stat.color}20` }}
                 >
                   <Icon className="w-6 h-6" style={{ color: stat.color }} />
                 </div>
                 <span
-                  className="text-sm font-medium px-2 py-1 rounded"
+                  className="text-sm font-medium px-3 py-1 rounded-full border"
                   style={{ 
-                    backgroundColor: `${stat.color}20`,
-                    color: stat.color
+                    backgroundColor: `${stat.color}15`,
+                    color: stat.color,
+                    borderColor: `${stat.color}40`
                   }}
                 >
                   {stat.change}
                 </span>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white mb-1">
+                <div className="text-3xl font-bold text-white mb-1 group-hover:text-[#0B874F] transition-colors duration-300">
                   {stat.value}
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                   {Object.keys(stats)[index].replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                 </div>
               </div>

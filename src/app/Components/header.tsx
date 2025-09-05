@@ -46,21 +46,22 @@ export function Header() {
           fontFamily: '"IBM Plex Mono", monospace',
           letterSpacing: '0.2em'
         }}>
-          UFC
+          FOSSER
         </h1>
         <p className="text-xl font-mono font-medium" style={{ 
           color: '#FFFFFF',
           textShadow: '0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4)',
           opacity: 1
         }}>
-          We serve no proprietary material, only the flow of free information.
+          Open Source, Open Minds. Building the future together.
         </p>
         
         {/* GitHub Feed and Join button - top right */}
         <div className="absolute top-8 right-8 flex items-center gap-4">
           <span className="text-sm font-mono" style={{ color: '#F5A623' }}>GitHub Feed</span>
           <button 
-            className="px-6 py-2 rounded font-mono text-sm font-medium transition-all duration-300 border-2 hover:scale-105"
+            onClick={() => window.location.href = '/login'}
+            className="px-6 py-2 rounded font-mono text-sm font-medium transition-all duration-300 border-2 hover:scale-105 cursor-pointer"
             style={{ 
               backgroundColor: '#0B874F', 
               color: '#000000',

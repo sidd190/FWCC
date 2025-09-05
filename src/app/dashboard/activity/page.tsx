@@ -124,27 +124,27 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+      <div className="bg-gradient-to-r from-black/60 to-[#0B874F]/10 backdrop-blur-sm border border-[#0B874F]/30 rounded-xl p-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
-              <Activity className="w-8 h-8 mr-3" />
+            <h1 className="text-4xl font-bold text-white mb-2 flex items-center">
+              <Activity className="w-10 h-10 mr-4 text-[#0B874F]" />
               Activity Feed
             </h1>
-            <p className="text-gray-400">
-              Recent activity from the community
+            <p className="text-gray-300 text-lg">
+              Stay updated with the latest community contributions and events
             </p>
           </div>
           
           {/* Filter Options */}
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center space-x-4">
+            <Filter className="w-5 h-5 text-gray-400" />
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as any)}
-              className="px-3 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white focus:outline-none focus:border-[#0B874F]"
+              className="px-4 py-3 bg-black/50 border border-[#0B874F]/30 rounded-xl text-white focus:outline-none focus:border-[#0B874F] font-medium"
             >
               <option value="all">All Activity</option>
               <option value="commits">Commits</option>
@@ -158,15 +158,16 @@ export default function ActivityPage() {
       {/* Activity Feed */}
       {activities.length > 0 ? (
         <div className="space-y-4">
-          {activities.map((activity) => (
+          {activities.map((activity, index) => (
             <div
               key={activity.id}
-              className={`bg-black/40 backdrop-blur-sm border rounded-lg p-4 hover:border-[#0B874F]/50 transition-all duration-200 ${getActivityColor(activity.type)}`}
+              className={`group bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-sm border rounded-xl p-6 hover:border-[#0B874F]/60 hover:shadow-lg hover:shadow-[#0B874F]/10 transition-all duration-300 hover:scale-[1.02] ${getActivityColor(activity.type)}`}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-start space-x-4">
                 {/* Activity Icon */}
                 <div className="flex-shrink-0 mt-1">
-                  <div className="w-8 h-8 bg-black/30 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-black/40 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     {getActivityIcon(activity.type)}
                   </div>
                 </div>
@@ -175,12 +176,12 @@ export default function ActivityPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-white text-sm">
+                      <p className="text-white text-base group-hover:text-gray-100 transition-colors duration-300">
                         {activity.user && (
-                          <span className="font-medium text-[#0B874F]">
+                          <span className="font-semibold text-[#0B874F] group-hover:text-[#0ea55c] transition-colors duration-300">
                             {activity.user.name}
                             {activity.user.githubUsername && (
-                              <span className="text-gray-400"> (@{activity.user.githubUsername})</span>
+                              <span className="text-gray-400 font-normal"> (@{activity.user.githubUsername})</span>
                             )}
                           </span>
                         )}
@@ -188,25 +189,27 @@ export default function ActivityPage() {
                         {activity.message}
                       </p>
                       
-                      <div className="flex items-center space-x-2 mt-1">
+                      <div className="flex items-center space-x-3 mt-2">
                         {activity.repo && (
                           <>
-                            <span className="text-[#0B874F] text-xs font-medium">{activity.repo}</span>
-                            <span className="text-gray-400 text-xs">•</span>
+                            <span className="text-[#0B874F] text-sm font-medium bg-[#0B874F]/10 px-2 py-1 rounded-md">
+                              {activity.repo}
+                            </span>
                           </>
                         )}
                         {activity.target && activity.target !== activity.repo && (
                           <>
-                            <span className="text-[#0B874F] text-xs font-medium">{activity.target}</span>
-                            <span className="text-gray-400 text-xs">•</span>
+                            <span className="text-[#0B874F] text-sm font-medium bg-[#0B874F]/10 px-2 py-1 rounded-md">
+                              {activity.target}
+                            </span>
                           </>
                         )}
-                        <span className="text-gray-400 text-xs">{activity.time}</span>
+                        <span className="text-gray-400 text-sm">{activity.time}</span>
                       </div>
                     </div>
                     
                     {/* Activity Type Badge */}
-                    <span className="flex-shrink-0 ml-4 px-2 py-1 bg-black/30 rounded text-xs font-medium text-gray-300 capitalize">
+                    <span className="flex-shrink-0 ml-4 px-3 py-1 bg-black/40 border border-white/10 rounded-full text-sm font-medium text-gray-300 capitalize group-hover:bg-[#0B874F]/20 group-hover:text-[#0B874F] transition-all duration-300">
                       {activity.type.replace('_', ' ')}
                     </span>
                   </div>
