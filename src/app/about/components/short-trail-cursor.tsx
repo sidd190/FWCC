@@ -35,14 +35,9 @@ export default function ShortTrailCursor() {
 
     let lastT = performance.now()
     let lastMoveAt = performance.now()
-
-    const onMove = (e: PointerEvent) => {
-      lastMoveAt = performance.now()
-      trail.push({ x: e.clientX, y: e.clientY, t: lastMoveAt })
-      while (trail.length > maxPoints) trail.shift()
-    }
-
     let raf = 0
+    let isAnimating = false
+    
     const render = () => {
       const now = performance.now()
       const dt = now - lastT
@@ -51,6 +46,13 @@ export default function ShortTrailCursor() {
       const idleMs = now - lastMoveAt
       // Quick vanish: start fading after 200ms idle, gone by ~450ms
       const decay = idleMs <= 200 ? 1 : Math.max(0, 1 - (idleMs - 200) / 250)
+
+      // Stop animation when completely faded and no trail
+      if (decay === 0 && trail.length === 0) {
+        isAnimating = false
+        ctx.clearRect(0, 0, width, height)
+        return
+      }
 
       // Faster clear when idle, otherwise keep a slight persistence
       ctx.globalCompositeOperation = "source-over"
@@ -98,7 +100,23 @@ export default function ShortTrailCursor() {
         trail.length = 0
       }
 
-      raf = requestAnimationFrame(render)
+      if (isAnimating) {
+        raf = requestAnimationFrame(render)
+      }
+    }
+    
+    const startAnimation = () => {
+      if (!isAnimating) {
+        isAnimating = true
+        render()
+      }
+    }
+
+    const onMove = (e: PointerEvent) => {
+      lastMoveAt = performance.now()
+      trail.push({ x: e.clientX, y: e.clientY, t: lastMoveAt })
+      while (trail.length > maxPoints) trail.shift()
+      startAnimation() // Start animation when mouse moves
     }
 
     resize()

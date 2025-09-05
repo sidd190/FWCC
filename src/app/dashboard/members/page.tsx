@@ -1,33 +1,22 @@
 "use client";
 
-import { Users, Mail, Github, MapPin, Calendar, Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Users, Github, MapPin, Calendar, Search } from "lucide-react";
 
 interface Member {
   id: string;
   name: string;
   email: string;
-  role: string;
-  githubUsername: string;
-  avatar: string;
-  joinDate: string;
-  location: string;
-  contributions: number;
-  status: string;
-  stats: {
+  githubUsername?: string;
+  location?: string;
+  bio?: string;
+  avatar?: string;
+  joinedAt: string;
+  githubStats?: {
     commits: number;
     pullRequests: number;
     issues: number;
-    repositories: number;
-    followers: number;
-    level: number;
-    experience: number;
-    streak: number;
-  };
-  activity: {
-    activeProjects: number;
-    upcomingEvents: number;
-    recentActivity: number;
+    contributions: number;
   };
 }
 
@@ -35,30 +24,23 @@ export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchMembers();
-  }, [filter]);
+  }, []);
 
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      const url = filter === 'all' 
-        ? '/api/dashboard/members?limit=50'
-        : `/api/dashboard/members?limit=50&role=${filter}`;
-
-      const response = await fetch(url);
+      const response = await fetch('/api/dashboard/members');
       
       if (!response.ok) {
         throw new Error('Failed to fetch members');
       }
 
       const data = await response.json();
-      setMembers(data.members);
+      setMembers(data.members || []);
     } catch (err) {
       console.error('Error fetching members:', err);
       setError('Failed to load members');
@@ -67,25 +49,8 @@ export default function MembersPage() {
     }
   };
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin': return '#E74C3C';
-      case 'moderator': return '#F5A623';
-      case 'member': return '#0B874F';
-      default: return '#6B7280';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return '#0B874F';
-      case 'inactive': return '#6B7280';
-      default: return '#6B7280';
-    }
-  };
-
-  const filteredMembers = members.filter(member => 
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredMembers = members.filter(member =>
+    member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     member.githubUsername?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     member.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -103,8 +68,9 @@ export default function MembersPage() {
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
               <div className="animate-pulse">
-                <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+                <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded w-3/4 mx-auto mb-2"></div>
+                <div className="h-3 bg-gray-700 rounded w-1/2 mx-auto"></div>
               </div>
             </div>
           ))}
@@ -134,173 +100,121 @@ export default function MembersPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#0B874F] mb-2">
-              Club Members
+            <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
+              <Users className="w-8 h-8 mr-3" />
+              Community Members
             </h1>
             <p className="text-gray-400">
-              Connect with fellow developers and contributors in the FOSSER community.
+              Connect with {members.length} developers in our community
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-white">{members.length}</div>
-            <div className="text-sm text-gray-400">Total Members</div>
-          </div>
         </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search members by name, username, or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-black/40 border border-[#0B874F]/30 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#0B874F]/50"
-            />
-          </div>
-          <div className="flex gap-2">
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="bg-black/40 border border-[#0B874F]/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0B874F]/50"
-            >
-              <option value="all">All Roles</option>
-              <option value="admin">Admins</option>
-              <option value="moderator">Moderators</option>
-              <option value="member">Members</option>
-            </select>
-          </div>
+        
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search members..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#0B874F] transition-colors"
+          />
         </div>
       </div>
 
       {/* Members Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredMembers.length > 0 ? (
-          filteredMembers.map((member) => (
+      {filteredMembers.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredMembers.map((member) => (
             <div
               key={member.id}
               className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200"
             >
-              {/* Member Header */}
-              <div className="flex items-center space-x-4 mb-4">
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="w-12 h-12 rounded-full border-2 border-[#0B874F]/30"
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white">{member.name}</h3>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className="text-xs px-2 py-1 rounded-full"
-                      style={{
-                        backgroundColor: `${getRoleColor(member.role)}20`,
-                        color: getRoleColor(member.role)
-                      }}
-                    >
-                      {member.role}
+              {/* Avatar and Name */}
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 mx-auto mb-3 bg-[#0B874F]/20 rounded-full flex items-center justify-center overflow-hidden">
+                  {member.avatar ? (
+                    <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-[#0B874F] text-xl font-bold">
+                      {member.name?.charAt(0) || member.email.charAt(0)}
                     </span>
-                    <span
-                      className="text-xs px-2 py-1 rounded-full"
-                      style={{
-                        backgroundColor: `${getStatusColor(member.status)}20`,
-                        color: getStatusColor(member.status)
-                      }}
-                    >
-                      {member.status}
-                    </span>
-                  </div>
+                  )}
                 </div>
+                <h3 className="text-lg font-bold text-white">{member.name || 'Anonymous'}</h3>
+                {member.githubUsername && (
+                  <p className="text-sm text-gray-400 flex items-center justify-center">
+                    <Github className="w-3 h-3 mr-1" />
+                    @{member.githubUsername}
+                  </p>
+                )}
               </div>
 
-              {/* Contact Info */}
+              {/* Bio */}
+              {member.bio && (
+                <p className="text-gray-400 text-sm text-center mb-4 line-clamp-2">
+                  {member.bio}
+                </p>
+              )}
+
+              {/* Location and Join Date */}
               <div className="space-y-2 mb-4">
-                <div className="flex items-center space-x-2 text-sm text-gray-400">
-                  <Mail className="w-4 h-4" />
-                  <span>{member.email}</span>
-                </div>
-                {member.githubUsername && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-400">
-                    <Github className="w-4 h-4" />
-                    <span>@{member.githubUsername}</span>
-                  </div>
-                )}
                 {member.location && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-400">
-                    <MapPin className="w-4 h-4" />
+                  <div className="flex items-center text-sm text-gray-400">
+                    <MapPin className="w-3 h-3 mr-2" />
                     <span>{member.location}</span>
                   </div>
                 )}
-                <div className="flex items-center space-x-2 text-sm text-gray-400">
-                  <Calendar className="w-4 h-4" />
-                                      <span>Joined {new Date(member.joinDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}</span>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="text-center p-3 bg-black/20 rounded-lg">
-                  <div className="text-lg font-bold text-[#0B874F]">{member.contributions}</div>
-                  <div className="text-xs text-gray-400">Contributions</div>
-                </div>
-                <div className="text-center p-3 bg-black/20 rounded-lg">
-                  <div className="text-lg font-bold text-[#F5A623]">{member.stats.level}</div>
-                  <div className="text-xs text-gray-400">Level</div>
-                </div>
-              </div>
-
-              {/* Activity */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Active Projects</span>
-                  <span className="text-white">{member.activity.activeProjects}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Upcoming Events</span>
-                  <span className="text-white">{member.activity.upcomingEvents}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Recent Activity</span>
-                  <span className="text-white">{member.activity.recentActivity}</span>
+                <div className="flex items-center text-sm text-gray-400">
+                  <Calendar className="w-3 h-3 mr-2" />
+                  <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
                 </div>
               </div>
 
               {/* GitHub Stats */}
-              <div className="mt-4 pt-4 border-t border-[#0B874F]/20">
-                <h4 className="text-sm font-medium text-white mb-2">GitHub Stats</h4>
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <span className="text-gray-400">Commits:</span>
-                    <span className="text-white ml-1">{member.stats.commits}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">PRs:</span>
-                    <span className="text-white ml-1">{member.stats.pullRequests}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Issues:</span>
-                    <span className="text-white ml-1">{member.stats.issues}</span>
+              {member.githubStats && (
+                <div className="border-t border-[#0B874F]/20 pt-4">
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div>
+                      <div className="text-lg font-bold text-[#0B874F]">{member.githubStats.commits}</div>
+                      <div className="text-xs text-gray-400">Commits</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-[#F5A623]">{member.githubStats.pullRequests}</div>
+                      <div className="text-xs text-gray-400">PRs</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-[#E74C3C]">{member.githubStats.issues}</div>
+                      <div className="text-xs text-gray-400">Issues</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Contact Button */}
+              <button className="w-full mt-4 px-4 py-2 bg-[#0B874F]/10 border border-[#0B874F]/30 rounded-lg text-[#0B874F] hover:bg-[#0B874F]/20 transition-colors text-sm font-medium">
+                View Profile
+              </button>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-12 text-gray-400">
-            <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <h3 className="text-xl font-medium mb-2">No Members Found</h3>
-            <p>{searchTerm ? 'Try adjusting your search terms.' : 'No members available.'}</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-12 text-center">
+          <Users className="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" />
+          <h3 className="text-xl font-bold text-gray-400 mb-2">
+            {searchTerm ? 'No Members Found' : 'No Members Yet'}
+          </h3>
+          <p className="text-gray-500">
+            {searchTerm 
+              ? `No members match "${searchTerm}". Try a different search term.`
+              : 'Be the first to join our community!'
+            }
+          </p>
+        </div>
+      )}
     </div>
   );
 }

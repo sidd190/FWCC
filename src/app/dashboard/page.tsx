@@ -61,6 +61,7 @@ const DashboardPage = React.memo(function DashboardPage() {
   const [githubWeeklyStats, setGitHubWeeklyStats] = useState<GitHubWeeklyStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -116,6 +117,37 @@ const DashboardPage = React.memo(function DashboardPage() {
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncGitHubData = async () => {
+    if (!user?.githubUsername) {
+      alert('No GitHub username configured. Please update your profile.');
+      return;
+    }
+
+    try {
+      setSyncing(true);
+      const response = await fetch('/api/dashboard/sync-github', {
+        method: 'POST'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to sync GitHub data');
+      }
+
+      // Clear cache and refetch data
+      sessionStorage.removeItem('dashboard-data');
+      sessionStorage.removeItem('dashboard-data-time');
+      await fetchDashboardData();
+      
+      alert('GitHub data synced successfully!');
+    } catch (err) {
+      console.error('Error syncing GitHub data:', err);
+      alert(err instanceof Error ? err.message : 'Failed to sync GitHub data');
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -313,20 +345,42 @@ const DashboardPage = React.memo(function DashboardPage() {
           </h2>
           
           <div className="space-y-3">
-            <button className="w-full p-4 bg-[#0B874F]/10 border border-[#0B874F]/30 rounded-lg text-left hover:bg-[#0B874F]/20 transition-colors">
+            <button 
+              onClick={() => window.location.href = '/dashboard/leaderboard'}
+              className="w-full p-4 bg-[#0B874F]/10 border border-[#0B874F]/30 rounded-lg text-left hover:bg-[#0B874F]/20 transition-colors"
+            >
               <div className="text-[#0B874F] font-medium">View Leaderboard</div>
               <div className="text-gray-400 text-sm">Check your ranking</div>
             </button>
             
-            <button className="w-full p-4 bg-[#F5A623]/10 border border-[#F5A623]/30 rounded-lg text-left hover:bg-[#F5A623]/20 transition-colors">
+            <button 
+              onClick={() => window.location.href = '/dashboard/events'}
+              className="w-full p-4 bg-[#F5A623]/10 border border-[#F5A623]/30 rounded-lg text-left hover:bg-[#F5A623]/20 transition-colors"
+            >
               <div className="text-[#F5A623] font-medium">Join Event</div>
               <div className="text-gray-400 text-sm">Upcoming workshops</div>
             </button>
             
-            <button className="w-full p-4 bg-[#9B59B6]/10 border border-[#9B59B6]/30 rounded-lg text-left hover:bg-[#9B59B6]/20 transition-colors">
+            <button 
+              onClick={() => window.location.href = '/dashboard/projects'}
+              className="w-full p-4 bg-[#9B59B6]/10 border border-[#9B59B6]/30 rounded-lg text-left hover:bg-[#9B59B6]/20 transition-colors"
+            >
               <div className="text-[#9B59B6] font-medium">New Project</div>
               <div className="text-gray-400 text-sm">Start contributing</div>
             </button>
+            
+            {user?.githubUsername && (
+              <button 
+                onClick={syncGitHubData}
+                disabled={syncing}
+                className="w-full p-4 bg-[#E74C3C]/10 border border-[#E74C3C]/30 rounded-lg text-left hover:bg-[#E74C3C]/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="text-[#E74C3C] font-medium">
+                  {syncing ? 'Syncing...' : 'Sync GitHub'}
+                </div>
+                <div className="text-gray-400 text-sm">Update your stats</div>
+              </button>
+            )}
           </div>
 
           {/* GitHub Stats Preview */}

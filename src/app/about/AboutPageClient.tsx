@@ -5,8 +5,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { Home } from "lucide-react"
-// import FlowLines from "./components/flow-lines"
-import SmoothScrollProvider from "./components/lenis-provider"
+import FlowLines from "./components/flow-lines"
 import PhilosophyReveal from "./components/philosophy-reveal"
 import TeamScroller from "./components/team-scroller"
 import ContributorsWall from "./components/contributors-wall"
@@ -35,6 +34,7 @@ export default function AboutPageClient() {
           background: #000;
           -ms-overflow-style: none;
           scrollbar-width: none;
+          scroll-behavior: smooth;
         }
         html::-webkit-scrollbar,
         body::-webkit-scrollbar,
@@ -43,6 +43,9 @@ export default function AboutPageClient() {
           width: 0;
           height: 0;
           background: transparent;
+        }
+        * {
+          scroll-behavior: smooth;
         }
         .spark-underline {
           position: relative;
@@ -57,26 +60,25 @@ export default function AboutPageClient() {
         }
       `}</style>
 
-      <SmoothScrollProvider>
-        {/* Back to Home Button */}
-        <div className="fixed top-6 right-6 z-50">
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200 group"
-          >
-            <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-            <span className="text-sm font-mono">HOME</span>
-          </Link>
-        </div>
+      {/* Back to Home Button */}
+      <div className="fixed top-6 right-6 z-50">
+        <Link
+          href="/"
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200 group"
+        >
+          <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+          <span className="text-sm font-mono">HOME</span>
+        </Link>
+      </div>
 
-        <div className="relative">
-          {/* Background centered neon lines */}
-          {/* <FlowLines /> */}
-          {/* <ShortTrailCursor /> */}
-          {/* Sharp multicolor cursor trail */}
-          {/* Magnetic hover for cards/buttons (optional, kept subtle) */}
+      <div className="relative">
+        {/* Background centered neon lines */}
+        <FlowLines />
+        <ShortTrailCursor />
+        {/* Sharp multicolor cursor trail */}
+        {/* Magnetic hover for cards/buttons (optional, kept subtle) */}
 
-          <div className="relative z-10">
+        <div className="relative z-10">
             {/* Intro */}
             <section
               aria-labelledby="intro-heading"
@@ -344,7 +346,6 @@ export default function AboutPageClient() {
             <div className="h-[12vh]" />
           </div>
         </div>
-      </SmoothScrollProvider>
     </main>
   )
 }

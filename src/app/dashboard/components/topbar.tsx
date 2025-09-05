@@ -71,11 +71,23 @@ export default function Topbar() {
           {showUserMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-md border border-[#0B874F]/30 rounded-lg shadow-2xl z-[99999]">
               <div className="p-2">
-                <button className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:text-[#0B874F] hover:bg-[#0B874F]/10 rounded transition-colors">
+                <button 
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    window.location.href = '/dashboard/profile';
+                  }}
+                  className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:text-[#0B874F] hover:bg-[#0B874F]/10 rounded transition-colors"
+                >
                   <User className="w-4 h-4 mr-3" />
                   Profile
                 </button>
-                <button className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:text-[#0B874F] hover:bg-[#0B874F]/10 rounded transition-colors">
+                <button 
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    window.location.href = '/dashboard/settings';
+                  }}
+                  className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:text-[#0B874F] hover:bg-[#0B874F]/10 rounded transition-colors"
+                >
                   <Settings className="w-4 h-4 mr-3" />
                   Settings
                 </button>

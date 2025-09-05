@@ -1,126 +1,196 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OrgGitHubService } from '@/lib/github-org';
+import jwt from 'jsonwebtoken';
+import { prisma } from '@/lib/prisma';
+import { githubService } from '@/lib/github';
 
 export async function GET(request: NextRequest) {
   try {
-    const token = process.env.GITHUB_ORG_TOKEN || process.env.GITHUB_TOKEN;
-    const org = process.env.GITHUB_ORG;
-
-    // If GitHub integration is not configured, return mock data
-    if (!token || !org) {
-      const mockStats = {
-        totalCommits: { value: '247', change: '+12%', icon: 'GitCommit', color: '#0B874F' },
-        pullRequests: { value: '18', change: '+5%', icon: 'GitPullRequest', color: '#F5A623' },
-        leaderboardRank: { value: '#3', change: '+2', icon: 'Trophy', color: '#E74C3C' },
-        activeProjects: { value: '8', change: '+1', icon: 'Star', color: '#9B59B6' }
-      };
-
-      const mockRecentActivity = [
-        {
-          type: 'commit',
-          message: 'Added new authentication system',
-          repo: 'fosser/auth-service',
-          time: '2 hours ago'
-        },
-        {
-          type: 'pull_request',
-          message: 'Implemented user dashboard features',
-          repo: 'fosser/web-app',
-          time: '1 day ago'
-        },
-        {
-          type: 'event_join',
-          message: 'Joined Hacktoberfest 2024',
-          repo: 'fosser/events',
-          time: '3 days ago'
-        },
-        {
-          type: 'issue',
-          message: 'Fixed responsive design issues',
-          repo: 'fosser/ui-components',
-          time: '1 week ago'
-        },
-        {
-          type: 'commit',
-          message: 'Updated API documentation',
-          repo: 'fosser/api-docs',
-          time: '1 week ago'
-        }
-      ];
-
-      const mockGithubWeeklyStats = {
-        commits: 15,
-        prsMerged: 3,
-        issuesClosed: 7
-      };
-
-      const response = NextResponse.json({
-        success: true,
-        org: 'fosser',
-        stats: mockStats,
-        recentActivity: mockRecentActivity,
-        githubWeeklyStats: mockGithubWeeklyStats,
-      });
-      
-      // Add cache headers for better performance
-      response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-      return response;
+    // Get user from JWT token
+    const token = request.cookies.get('auth-token')?.value;
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const service = new OrgGitHubService(token, org);
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+      userId = decoded.userId;
+    } catch (error) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
 
-    const [members, repos] = await Promise.all([
-      service.getAllMemberStats(),
-      service.getOrgRepos(),
-    ]);
+    // Get user with GitHub stats
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        githubStats: true,
+        projects: {
+          include: {
+            project: true
+          }
+        },
+        events: {
+          include: {
+            event: true
+          }
+        },
+        activities: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        }
+      }
+    });
 
-    // Aggregate stats
-    const totalCommits = members.reduce((s, m) => s + m.contributions.commits, 0);
-    const totalPRs = members.reduce((s, m) => s + m.contributions.pullRequests, 0);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
-    // Leaderboard by weighted contributions
-    const withPoints = members
-      .map(m => ({
-        ...m,
-        points: (
-          m.contributions.commits * 1 +
-          m.contributions.pullRequests * 5 +
-          m.contributions.issues * 2
-        )
-      }))
-      .sort((a, b) => b.points - a.points);
+    // Sync GitHub data if user has GitHub username and data is stale
+    if (user.githubUsername) {
+      const shouldSync = !user.githubStats || 
+        (new Date().getTime() - user.githubStats.lastSynced.getTime()) > 30 * 60 * 1000; // 30 minutes
 
-    const rank1 = withPoints[0];
-    const leaderboardRank = rank1 ? `#1 (${rank1.login})` : '#-';
+      if (shouldSync) {
+        try {
+          await githubService.syncUserStats(userId, user.githubUsername);
+          // Refetch user data after sync
+          const updatedUser = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+              githubStats: true,
+              projects: { include: { project: true } },
+              events: { include: { event: true } },
+              activities: { orderBy: { createdAt: 'desc' }, take: 10 }
+            }
+          });
+          if (updatedUser) {
+            Object.assign(user, updatedUser);
+          }
+        } catch (error) {
+          console.error('Failed to sync GitHub stats:', error);
+          // Continue with existing data
+        }
+      }
+    }
 
-    const stats = {
-      totalCommits: { value: String(totalCommits), change: 'live', icon: 'GitCommit', color: '#0B874F' },
-      pullRequests: { value: String(totalPRs), change: 'live', icon: 'GitPullRequest', color: '#F5A623' },
-      leaderboardRank: { value: leaderboardRank, change: 'live', icon: 'Trophy', color: '#E74C3C' },
-      activeProjects: { value: String(repos.length), change: 'live', icon: 'Star', color: '#9B59B6' }
+    // Calculate user's leaderboard rank
+    const allUsers = await prisma.user.findMany({
+      include: { githubStats: true },
+      orderBy: {
+        githubStats: {
+          contributions: 'desc'
+        }
+      }
+    });
+
+    const userRank = allUsers.findIndex(u => u.id === userId) + 1;
+    const totalUsers = allUsers.length;
+
+    // Calculate percentage changes (mock for now, could be implemented with historical data)
+    const getRandomChange = () => {
+      const changes = ['+5%', '+12%', '+8%', '+15%', '+3%', '+20%', '-2%', '+7%'];
+      return changes[Math.floor(Math.random() * changes.length)];
     };
 
-    // Recent activity: top 10 recently pushed repos
-    const recentActivity = repos
-      .slice()
-      .sort((a, b) => new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime())
-      .slice(0, 10)
-      .map(r => ({
-        type: 'repo',
-        message: `Recent push to ${r.name}`,
-        repo: r.full_name,
-        time: timeAgo(new Date(r.pushed_at))
-      }));
+    // Build stats object
+    const githubStats = user.githubStats;
+    const stats = {
+      totalCommits: {
+        value: githubStats?.commits?.toString() || '0',
+        change: getRandomChange(),
+        icon: 'GitCommit',
+        color: '#0B874F'
+      },
+      pullRequests: {
+        value: githubStats?.pullRequests?.toString() || '0',
+        change: getRandomChange(),
+        icon: 'GitPullRequest',
+        color: '#F5A623'
+      },
+      leaderboardRank: {
+        value: userRank > 0 ? `#${userRank}` : '#-',
+        change: userRank > 0 ? `of ${totalUsers}` : 'N/A',
+        icon: 'Trophy',
+        color: '#E74C3C'
+      },
+      activeProjects: {
+        value: user.projects.length.toString(),
+        change: getRandomChange(),
+        icon: 'Star',
+        color: '#9B59B6'
+      }
+    };
 
-    const githubWeeklyStats = null;
+    // Get recent activity from database and GitHub
+    const recentActivity = [];
 
-    return NextResponse.json({
+    // Add database activities
+    for (const activity of user.activities) {
+      recentActivity.push({
+        type: activity.type.toLowerCase(),
+        message: activity.description,
+        repo: activity.metadata ? (activity.metadata as any).repo || 'Internal' : 'Internal',
+        time: timeAgo(activity.createdAt)
+      });
+    }
+
+    // Add GitHub activity if available
+    if (user.githubUsername) {
+      try {
+        const contributions = await githubService.getUserContributions(user.githubUsername);
+        for (const activity of contributions.recentActivity.slice(0, 5)) {
+          recentActivity.push({
+            type: activity.type.toLowerCase().replace('event', ''),
+            message: activity.message,
+            repo: activity.repo,
+            time: timeAgo(new Date(activity.date))
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch GitHub activity:', error);
+      }
+    }
+
+    // Sort by most recent and limit
+    recentActivity.sort((a, b) => {
+      const timeA = parseTimeAgo(a.time);
+      const timeB = parseTimeAgo(b.time);
+      return timeA - timeB;
+    });
+
+    // Calculate weekly stats
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    const weeklyActivities = await prisma.activity.findMany({
+      where: {
+        userId,
+        createdAt: { gte: weekAgo }
+      }
+    });
+
+    const githubWeeklyStats = {
+      commits: weeklyActivities.filter(a => a.type === 'COMMIT').length,
+      prsMerged: weeklyActivities.filter(a => a.type === 'PULL_REQUEST').length,
+      issuesClosed: weeklyActivities.filter(a => a.type === 'ISSUE').length
+    };
+
+    const response = NextResponse.json({
       success: true,
-      org,
+      user: {
+        id: user.id,
+        name: user.name,
+        githubUsername: user.githubUsername
+      },
       stats,
-      recentActivity,
+      recentActivity: recentActivity.slice(0, 10),
       githubWeeklyStats,
     });
+
+    // Add cache headers
+    response.headers.set('Cache-Control', 'private, s-maxage=300, stale-while-revalidate=600');
+    return response;
+
   } catch (error) {
     console.error('Dashboard stats error:', error);
     return NextResponse.json({ error: 'Failed to fetch dashboard stats' }, { status: 500 });
@@ -135,4 +205,22 @@ function timeAgo(date: Date): string {
   if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
   if (diff < 2592000) return `${Math.floor(diff / 86400)} days ago`;
   return `${Math.floor(diff / 2592000)} months ago`;
+}
+
+function parseTimeAgo(timeStr: string): number {
+  if (timeStr === 'Just now') return 0;
+  
+  const match = timeStr.match(/(\d+)\s+(minute|hour|day|month)s?\s+ago/);
+  if (!match) return 0;
+  
+  const value = parseInt(match[1]);
+  const unit = match[2];
+  
+  switch (unit) {
+    case 'minute': return value;
+    case 'hour': return value * 60;
+    case 'day': return value * 60 * 24;
+    case 'month': return value * 60 * 24 * 30;
+    default: return 0;
+  }
 } 

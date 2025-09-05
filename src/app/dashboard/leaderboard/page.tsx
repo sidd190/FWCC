@@ -1,77 +1,116 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Trophy, GitCommit, GitPullRequest, AlertCircle, Star, TrendingUp, Filter } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Trophy, Medal, Award, TrendingUp, GitCommit, GitPullRequest, Star } from "lucide-react";
 
-interface GitHubUser {
+interface LeaderboardUser {
   id: string;
-  username: string;
   name: string;
-  avatar: string;
-  rank: number;
-  points: number;
+  githubUsername?: string;
+  avatar?: string;
   stats: {
     commits: number;
     pullRequests: number;
     issues: number;
-    repositories: number;
-    followers: number;
     contributions: number;
   };
-  weeklyStats: {
-    commits: number;
-    pullRequests: number;
-    issues: number;
-  };
-  languages: Record<string, number>;
+  rank: number;
+  points: number;
 }
 
 export default function LeaderboardPage() {
-  const [users, setUsers] = useState<GitHubUser[]>([]);
+  const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('contributions');
-  const [period, setPeriod] = useState('all');
+  const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'contributions' | 'commits' | 'pullRequests'>('contributions');
 
   useEffect(() => {
-    fetchLeaderboardData();
-  }, [sortBy, period]);
+    fetchLeaderboard();
+  }, [sortBy]);
 
-  const fetchLeaderboardData = async () => {
+  const fetchLeaderboard = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/github/stats?sortBy=${sortBy}&period=${period}`);
-      const data = await response.json();
+      const response = await fetch(`/api/dashboard/leaderboard?sortBy=${sortBy}`);
       
-      if (data.success) {
-        setUsers(data.data);
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard');
       }
-    } catch (error) {
-      console.error('Failed to fetch leaderboard:', error);
+
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+      setError('Failed to load leaderboard');
     } finally {
       setLoading(false);
     }
   };
 
-  const getRankColor = (rank: number) => {
+  const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return "#FFD700"; // Gold
-      case 2: return "#C0C0C0"; // Silver  
-      case 3: return "#CD7F32"; // Bronze
-      default: return "#0B874F";
+      case 1:
+        return <Trophy className="w-6 h-6 text-yellow-500" />;
+      case 2:
+        return <Medal className="w-6 h-6 text-gray-400" />;
+      case 3:
+        return <Award className="w-6 h-6 text-amber-600" />;
+      default:
+        return <span className="w-6 h-6 flex items-center justify-center text-gray-400 font-bold">#{rank}</span>;
     }
   };
 
-  const getRankIcon = (rank: number) => {
+  const getRankBadge = (rank: number) => {
     if (rank <= 3) {
-      return <Trophy className="w-5 h-5" style={{ color: getRankColor(rank) }} />;
+      const colors = {
+        1: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
+        2: 'bg-gray-400/20 text-gray-400 border-gray-400/30',
+        3: 'bg-amber-600/20 text-amber-600 border-amber-600/30'
+      };
+      return colors[rank as keyof typeof colors];
     }
-    return <span className="text-[#0B874F] font-bold">#{rank}</span>;
+    return 'bg-[#0B874F]/20 text-[#0B874F] border-[#0B874F]/30';
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-[#0B874F] text-xl font-mono">Loading leaderboard...</div>
+      <div className="space-y-6">
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-700 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+              <div className="animate-pulse flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-700 rounded-full"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-700 rounded w-1/4 mb-2"></div>
+                  <div className="h-3 bg-gray-700 rounded w-1/3"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-red-400 mb-2">Error Loading Leaderboard</h2>
+          <p className="text-gray-400">{error}</p>
+          <button 
+            onClick={fetchLeaderboard}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -84,212 +123,116 @@ export default function LeaderboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
               <Trophy className="w-8 h-8 mr-3" />
-              GitHub Leaderboard
+              Leaderboard
             </h1>
             <p className="text-gray-400">
-              Track contributions and compete with fellow developers
+              Top contributors in our community
             </p>
           </div>
           
-          {/* Filters */}
-          <div className="flex items-center space-x-4">
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              className="bg-black/50 border border-[#0B874F]/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#0B874F]"
+          {/* Sort Options */}
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setSortBy('contributions')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                sortBy === 'contributions'
+                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+              }`}
             >
-              <option value="all">All Time</option>
-              <option value="month">This Month</option>
-              <option value="week">This Week</option>
-            </select>
-            
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-black/50 border border-[#0B874F]/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#0B874F]"
+              <TrendingUp className="w-4 h-4 inline mr-2" />
+              Total
+            </button>
+            <button
+              onClick={() => setSortBy('commits')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                sortBy === 'commits'
+                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+              }`}
             >
-              <option value="contributions">Total Contributions</option>
-              <option value="commits">Commits</option>
-              <option value="pullRequests">Pull Requests</option>
-              <option value="issues">Issues</option>
-            </select>
+              <GitCommit className="w-4 h-4 inline mr-2" />
+              Commits
+            </button>
+            <button
+              onClick={() => setSortBy('pullRequests')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                sortBy === 'pullRequests'
+                  ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
+                  : 'bg-black/30 text-gray-400 hover:text-[#0B874F]'
+              }`}
+            >
+              <GitPullRequest className="w-4 h-4 inline mr-2" />
+              PRs
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Top 3 Podium */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {users.slice(0, 3).map((user, index) => (
-          <div
-            key={user.id}
-            className={`bg-black/40 backdrop-blur-sm border rounded-lg p-6 text-center relative overflow-hidden ${
-              index === 0 ? 'border-yellow-500/50 md:order-2' : 
-              index === 1 ? 'border-gray-400/50 md:order-1' : 
-              'border-orange-500/50 md:order-3'
-            }`}
-          >
-            {/* Rank Badge */}
-            <div className="absolute top-4 right-4">
-              {getRankIcon(user.rank)}
-            </div>
-            
-            {/* Avatar */}
-            <div className="relative mx-auto mb-4">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-20 h-20 rounded-full border-4 mx-auto"
-                style={{ borderColor: getRankColor(user.rank) }}
-              />
-              {index === 0 && (
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-black" />
+      {/* Leaderboard */}
+      <div className="space-y-4">
+        {users.length > 0 ? (
+          users.map((user, index) => (
+            <div
+              key={user.id}
+              className={`bg-black/40 backdrop-blur-sm border rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200 ${getRankBadge(user.rank)}`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  {/* Rank */}
+                  <div className="flex-shrink-0">
+                    {getRankIcon(user.rank)}
+                  </div>
+                  
+                  {/* Avatar */}
+                  <div className="w-12 h-12 bg-[#0B874F]/20 rounded-full flex items-center justify-center overflow-hidden">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-[#0B874F] font-bold text-lg">
+                        {user.name?.charAt(0) || '?'}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* User Info */}
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{user.name}</h3>
+                    {user.githubUsername && (
+                      <p className="text-sm text-gray-400">@{user.githubUsername}</p>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-            
-            {/* User Info */}
-            <h3 className="text-xl font-bold text-white mb-1">{user.name}</h3>
-            <p className="text-[#0B874F] text-sm mb-4">@{user.username}</p>
-            
-            {/* Stats */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Points</span>
-                <span className="text-white font-bold">{user.points.toLocaleString()}</span>
+                
+                {/* Stats */}
+                <div className="flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#0B874F]">{user.stats.commits}</div>
+                    <div className="text-xs text-gray-400">Commits</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#F5A623]">{user.stats.pullRequests}</div>
+                    <div className="text-xs text-gray-400">PRs</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#E74C3C]">{user.stats.issues}</div>
+                    <div className="text-xs text-gray-400">Issues</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">{user.points}</div>
+                    <div className="text-xs text-gray-400">Points</div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Contributions</span>
-                <span className="text-[#0B874F]">{user.stats.contributions}</span>
-              </div>
             </div>
+          ))
+        ) : (
+          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-12 text-center">
+            <Trophy className="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" />
+            <h3 className="text-xl font-bold text-gray-400 mb-2">No Data Available</h3>
+            <p className="text-gray-500">Start contributing to see the leaderboard!</p>
           </div>
-        ))}
-      </div>
-
-      {/* Full Leaderboard Table */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg overflow-hidden">
-        <div className="p-6 border-b border-[#0B874F]/30">
-          <h2 className="text-xl font-bold text-white flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2 text-[#0B874F]" />
-            Full Rankings
-          </h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-black/30">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Rank</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Developer</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-400">Points</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-400">Commits</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-400">PRs</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-400">Issues</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-400">Repos</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Languages</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#0B874F]/20">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-[#0B874F]/5 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      {getRankIcon(user.rank)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full border-2 border-[#0B874F]/30"
-                      />
-                      <div>
-                        <div className="text-white font-medium">{user.name}</div>
-                        <div className="text-[#0B874F] text-sm">@{user.username}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="text-white font-bold">{user.points.toLocaleString()}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <GitCommit className="w-4 h-4 mr-1 text-[#0B874F]" />
-                      <span className="text-white">{user.stats.commits}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <GitPullRequest className="w-4 h-4 mr-1 text-[#F5A623]" />
-                      <span className="text-white">{user.stats.pullRequests}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <AlertCircle className="w-4 h-4 mr-1 text-[#E74C3C]" />
-                      <span className="text-white">{user.stats.issues}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <Star className="w-4 h-4 mr-1 text-[#9B59B6]" />
-                      <span className="text-white">{user.stats.repositories}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-wrap gap-1">
-                      {Object.entries(user.languages).slice(0, 3).map(([lang, percentage]) => (
-                        <span
-                          key={lang}
-                          className="px-2 py-1 bg-[#0B874F]/20 text-[#0B874F] text-xs rounded border border-[#0B874F]/30"
-                        >
-                          {lang} {percentage}%
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 text-center">
-          <GitCommit className="w-8 h-8 text-[#0B874F] mx-auto mb-3" />
-          <div className="text-2xl font-bold text-white mb-1">
-            {users.reduce((sum, user) => sum + user.stats.commits, 0).toLocaleString()}
-          </div>
-          <div className="text-gray-400 text-sm">Total Commits</div>
-        </div>
-        
-        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 text-center">
-          <GitPullRequest className="w-8 h-8 text-[#F5A623] mx-auto mb-3" />
-          <div className="text-2xl font-bold text-white mb-1">
-            {users.reduce((sum, user) => sum + user.stats.pullRequests, 0)}
-          </div>
-          <div className="text-gray-400 text-sm">Pull Requests</div>
-        </div>
-        
-        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 text-center">
-          <AlertCircle className="w-8 h-8 text-[#E74C3C] mx-auto mb-3" />
-          <div className="text-2xl font-bold text-white mb-1">
-            {users.reduce((sum, user) => sum + user.stats.issues, 0)}
-          </div>
-          <div className="text-gray-400 text-sm">Issues Resolved</div>
-        </div>
-        
-        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 text-center">
-          <Star className="w-8 h-8 text-[#9B59B6] mx-auto mb-3" />
-          <div className="text-2xl font-bold text-white mb-1">
-            {users.reduce((sum, user) => sum + user.stats.repositories, 0)}
-          </div>
-          <div className="text-gray-400 text-sm">Active Repositories</div>
-        </div>
+        )}
       </div>
     </div>
   );

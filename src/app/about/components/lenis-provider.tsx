@@ -14,7 +14,7 @@ type Props = {
 
 /**
  * Provides smooth scrolling using Lenis and syncs it with GSAP ScrollTrigger.
- * Respects prefers-reduced-motion.
+ * Respects prefers-reduced-motion and provides fallback for better performance.
  */
 export default function SmoothScrollProvider({ children }: Props) {
   const lenisRef = useRef<Lenis | null>(null)
@@ -25,33 +25,74 @@ export default function SmoothScrollProvider({ children }: Props) {
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
+    // Check for performance preference or low-end device
+    const isLowPerformance = 
+      prefersReduced || 
+      (typeof navigator !== "undefined" && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
+
+    // If low performance, use native scroll with CSS smooth behavior
+    if (isLowPerformance) {
+      document.documentElement.style.scrollBehavior = "smooth"
+      
+      // Still need to update ScrollTrigger on scroll for animations
+      const onScroll = () => ScrollTrigger.update()
+      window.addEventListener("scroll", onScroll, { passive: true })
+      
+      return () => {
+        window.removeEventListener("scroll", onScroll)
+        document.documentElement.style.scrollBehavior = ""
+      }
+    }
+
+    // Use Lenis for high-performance devices with optimized settings
     const lenis = new Lenis({
-      duration: prefersReduced ? 0.6 : 1.2,
-      smoothWheel: !prefersReduced,
-      smoothTouch: !prefersReduced,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
-      syncTouch: true,
+      duration: 0.6, // Faster response
+      smoothWheel: true,
+      smoothTouch: false, // Disable for better mobile performance
+      easing: (t: number) => 1 - Math.pow(1 - t, 2), // Simpler, faster easing
+      syncTouch: false,
       gestureOrientation: "vertical",
+      wheelMultiplier: 1.4, // More responsive
+      touchMultiplier: 2,
+      infinite: false,
+      normalizeWheel: true,
     })
     lenisRef.current = lenis
 
-    // tie into GSAP
+    // Optimized GSAP integration
+    let ticking = false
     function onScroll() {
-      ScrollTrigger.update()
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          ScrollTrigger.update()
+          ticking = false
+        })
+        ticking = true
+      }
     }
     lenis.on("scroll", onScroll)
 
+    // Use GSAP ticker with throttling
+    let lastTime = 0
     gsap.ticker.add((time) => {
-      lenis.raf(time * 1000)
+      if (time - lastTime > 8) { // ~120fps max
+        lenis.raf(time * 1000)
+        lastTime = time
+      }
     })
     gsap.ticker.lagSmoothing(0)
 
-    // Refresh on resize/content changes
-    const r = () => ScrollTrigger.refresh()
-    window.addEventListener("resize", r)
+    // Throttled resize handler
+    let resizeTimeout: NodeJS.Timeout
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => ScrollTrigger.refresh(), 100)
+    }
+    window.addEventListener("resize", handleResize, { passive: true })
 
     return () => {
-      window.removeEventListener("resize", r)
+      clearTimeout(resizeTimeout)
+      window.removeEventListener("resize", handleResize)
       lenis.off("scroll", onScroll)
       lenis.destroy()
       gsap.ticker.lagSmoothing(1000, 16)

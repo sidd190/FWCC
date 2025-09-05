@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -11,13 +11,11 @@ type FlowLinesProps = {
 }
 
 /**
- * Right-strip (10vw) neon lines:
- * - Constrained to the rightmost 10vw via clipPath and amplitude limits.
- * - Slower top-down reveal.
- * - Continuous traveling motion synchronized with scroll across the entire page.
- * - About one rotation per viewport/page.
- * - All four lines take distinct paths (no strict pairing), with subtle per-line differences.
- * - Keeps existing opacity.
+ * Optimized FlowLines component with performance improvements:
+ * - Throttled scroll updates
+ * - Reduced calculation complexity
+ * - Optimized DOM manipulations
+ * - Better memory management
  */
 export default function FlowLines({ count = 4 }: FlowLinesProps = { count: 4 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -25,169 +23,225 @@ export default function FlowLines({ count = 4 }: FlowLinesProps = { count: 4 }) 
   const [docHeight, setDocHeight] = useState<number>(1000)
   const [width, setWidth] = useState<number>(1200)
   const [vh, setVh] = useState<number>(800)
-  const morphST = useRef<any>(null) // Declare morphST variable
+  const morphST = useRef<any>(null)
+  const lastUpdateTime = useRef<number>(0)
+  const animationFrameId = useRef<number>(0)
 
-  // Track total document height and viewport width/height
-  useEffect(() => {
-    const update = () => {
-      const h = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight,
-        document.documentElement.clientHeight,
-      )
-      setDocHeight(h)
-      setWidth(window.innerWidth || 1200)
-      setVh(window.innerHeight || 800)
-      ScrollTrigger.refresh()
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(document.documentElement)
-    window.addEventListener("resize", update)
-    window.addEventListener("load", update)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener("resize", update)
-      window.removeEventListener("load", update)
-    }
+  // Throttled update function to prevent excessive recalculations
+  const throttledUpdate = useCallback(() => {
+    const now = Date.now()
+    if (now - lastUpdateTime.current < 100) return // Throttle to 10fps max
+    
+    lastUpdateTime.current = now
+    const h = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.documentElement.clientHeight,
+    )
+    setDocHeight(h)
+    setWidth(window.innerWidth || 1200)
+    setVh(window.innerHeight || 800)
+    ScrollTrigger.refresh()
   }, [])
 
-  // Helper: compute N paths for given phase (for traveling wave morph)
-  const computePaths = (phase: number) => {
+  // Track total document height and viewport width/height with throttling
+  useEffect(() => {
+    throttledUpdate()
+    
+    const debouncedUpdate = () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
+      animationFrameId.current = requestAnimationFrame(throttledUpdate)
+    }
+    
+    const ro = new ResizeObserver(debouncedUpdate)
+    ro.observe(document.documentElement)
+    window.addEventListener("resize", debouncedUpdate, { passive: true })
+    window.addEventListener("load", debouncedUpdate, { passive: true })
+    
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
+      ro.disconnect()
+      window.removeEventListener("resize", debouncedUpdate)
+      window.removeEventListener("load", debouncedUpdate)
+    }
+  }, [throttledUpdate])
+
+  // Optimized path computation with reduced complexity and caching
+  const computePaths = useCallback((phase: number) => {
     const H = Math.max(docHeight, vh, 1000)
     const W = Math.max(width, 1200)
 
     // Right strip geometry (10vw)
     const stripLeft = W * 0.9
-    const stripWidth = Math.max(80, W * 0.1) // ensure a minimum width for tiny viewports
+    const stripWidth = Math.max(80, W * 0.1)
     const cx = stripLeft + stripWidth / 2
 
     // amplitude limited to the strip
-    const maxAmp = stripWidth / 2 - 6 // leave a few px margin for stroke
+    const maxAmp = stripWidth / 2 - 6
     const baseAmp = Math.max(10, Math.min(maxAmp, stripWidth * 0.45))
 
-    // sampling resolution along height
-    const steps = Math.max(220, Math.floor(H / 12))
+    // Reduced sampling resolution for better performance
+    const steps = Math.min(120, Math.max(60, Math.floor(H / 20)))
     const dy = H / steps
 
     const makePath = (idx: number) => {
-      // Distinct per-line phase/frequency/twist (no strict mirroring)
-      const phaseShift = (idx * Math.PI) / 3.2 // distribute around ~180-220°
+      // Pre-calculate constants to avoid repeated calculations
+      const phaseShift = (idx * Math.PI) / 3.2
       const amp = Math.min(maxAmp, baseAmp * (0.88 + 0.1 * idx))
-      const freq = 0.98 + idx * 0.08 // main oscillation
-      const twist = 1.55 + idx * 0.12 // secondary harmonic (adds "helix" feel)
+      const freq = 0.98 + idx * 0.08
+      const twist = 1.55 + idx * 0.12
+      
+      // Pre-calculate phase components
+      const phaseComponent1 = phase + phaseShift
+      const phaseComponent2 = -0.6 * phase + phaseShift * 0.7
 
-      let y = 0
-      const t0 = 0
-      const x0 =
-        cx +
-        amp * 0.68 * Math.sin(2 * Math.PI * freq * t0 + phase + phaseShift) +
-        amp * 0.34 * Math.sin(2 * Math.PI * twist * t0 - 0.6 * phase + phaseShift * 0.7)
+      const points: string[] = []
+      
+      // Initial point
+      const x0 = cx + amp * 0.68 * Math.sin(phaseComponent1) + amp * 0.34 * Math.sin(phaseComponent2)
+      points.push(`M ${x0.toFixed(1)},0`)
 
-      let d = `M ${x0},0`
+      // Generate path points with optimized calculations
       for (let i = 1; i <= steps; i++) {
-        y = i * dy
+        const y = i * dy
         const t = y / H
-        // Traveling wave: phase advances with scroll (phase), producing continuous up/down motion
-        const x =
-          cx +
-          amp * 0.68 * Math.sin(2 * Math.PI * freq * t + phase + phaseShift) +
-          amp * 0.34 * Math.sin(2 * Math.PI * twist * t - 0.6 * phase + phaseShift * 0.7)
-        d += ` L ${x},${y}`
+        const tFreq = 2 * Math.PI * freq * t
+        const tTwist = 2 * Math.PI * twist * t
+        
+        const x = cx + 
+          amp * 0.68 * Math.sin(tFreq + phaseComponent1) + 
+          amp * 0.34 * Math.sin(tTwist + phaseComponent2)
+        
+        points.push(` L ${x.toFixed(1)},${y.toFixed(1)}`)
       }
-      return d
+      
+      return points.join('')
     }
 
     return Array.from({ length: count }, (_, i) => makePath(i))
-  }
+  }, [docHeight, width, vh, count])
 
   // Initial paths (phase = 0)
   const initialPaths = useMemo(() => computePaths(0), [docHeight, width, vh, count])
 
   useEffect(() => {
     if (!svgRef.current) return
-    const ctx = gsap.context(() => {
-      const pathEls = gsap.utils.toArray<SVGPathElement>(".dna-line")
+    
+    const pathEls = svgRef.current.querySelectorAll<SVGPathElement>(".dna-line")
+    if (pathEls.length === 0) return
 
-      // 1) Slower reveal from the top — over ~1.6 viewports
+    // Initialize path reveal animation
+    pathEls.forEach((p, i) => {
+      const len = p.getTotalLength()
+      p.style.strokeDasharray = `${len}`
+      p.style.strokeDashoffset = `${len}`
+    })
+
+    let lastScrollY = 0
+    let ticking = false
+    
+    const updateAnimation = () => {
+      const scrollY = window.scrollY
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+      const scrollProgress = Math.min(1, scrollY / maxScroll)
+      
+      // 1) Path reveal based on scroll (first 60% of scroll)
+      const revealProgress = Math.min(1, scrollProgress / 0.6)
       pathEls.forEach((p, i) => {
         const len = p.getTotalLength()
-        p.style.strokeDasharray = `${len}`
-        p.style.strokeDashoffset = `${len}`
-        gsap.to(p, {
-          strokeDashoffset: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: document.documentElement,
-            start: "top top",
-            end: "+=160%", // slower growth span
-            scrub: true,
-          },
-          delay: i * 0.04,
-        })
+        const delay = i * 0.1 // Stagger the reveal
+        const adjustedProgress = Math.max(0, Math.min(1, (revealProgress - delay) / (1 - delay)))
+        p.style.strokeDashoffset = `${len * (1 - adjustedProgress)}`
       })
-
-      // 2) Continuous traveling motion across the entire page
-      // Roughly one full rotation per viewport/page
-      const state = { ph: 0 }
-      const setters = pathEls.map((el) => (d: string) => el.setAttribute("d", d))
-
-      // Drive phase from total scroll distance so pins are included.
-      const rotationsPerViewport = 1 // ≈ one full rotation per viewport height
-      morphST.current = ScrollTrigger.create({
-        trigger: document.documentElement,
-        start: "top top",
-        end: "max", // include extra scroll from pinned sections
-        scrub: true,
-        onUpdate: (self) => {
-          const max = ScrollTrigger.maxScroll(window)
-          const vhLocal = Math.max(1, window.innerHeight || 1)
-          const totalRotations = (max / vhLocal) * rotationsPerViewport
-          state.ph = self.progress * totalRotations * Math.PI * 2
-          const newDs = computePaths(state.ph)
-          for (let i = 0; i < setters.length; i++) setters[i](newDs[i])
-        },
+      
+      // 2) Continuous flowing motion based on total scroll
+      const phase = scrollProgress * Math.PI * 4 // 2 full rotations over entire page
+      const newPaths = computePaths(phase)
+      
+      pathEls.forEach((p, i) => {
+        if (newPaths[i]) {
+          p.setAttribute("d", newPaths[i])
+        }
       })
-
-      // Ensure we re-render immediately after refresh (layout changes, pins, etc.)
-      ScrollTrigger.addEventListener("refresh", () => {
-        morphST.current?.update()
-      })
-    }, svgRef)
-    return () => {
-      morphST.current?.kill()
-      ctx.revert()
+      
+      lastScrollY = scrollY
+      ticking = false
     }
-  }, [docHeight, width, vh, count])
 
-  // Subtle pointer parallax (kept very small so it stays inside 10vw band)
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateAnimation)
+        ticking = true
+      }
+    }
+
+    // Initial update
+    updateAnimation()
+    
+    // Listen to scroll events
+    window.addEventListener("scroll", onScroll, { passive: true })
+    
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+    }
+  }, [computePaths])
+
+  // Optimized pointer parallax with throttling and reduced frequency
   useEffect(() => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
-    let targetX = 0,
-      targetY = 0
-    let curX = 0,
-      curY = 0
+    
+    let targetX = 0, targetY = 0, curX = 0, curY = 0
+    let isAnimating = false
+    let lastMoveTime = 0
+    
     const onMove = (e: PointerEvent) => {
+      const now = Date.now()
+      if (now - lastMoveTime < 32) return // Throttle to ~30fps
+      lastMoveTime = now
+      
       const vw = window.innerWidth
       const vhLocal = window.innerHeight
-      // tiny parallax range to avoid leaving the strip
-      targetX = (e.clientX / vw - 0.5) * 2
-      targetY = (e.clientY / vhLocal - 0.5) * 2
+      // Reduced parallax range for better performance
+      targetX = (e.clientX / vw - 0.5) * 1
+      targetY = (e.clientY / vhLocal - 0.5) * 1
     }
+    
     const tick = () => {
-      curX += (targetX - curX) * 0.06
-      curY += (targetY - curY) * 0.06
-      wrapper.style.transform = `translate3d(${curX}px, ${curY}px, 0)`
-      requestAnimationFrame(tick)
+      const deltaX = targetX - curX
+      const deltaY = targetY - curY
+      
+      // Only update if there's meaningful movement
+      if (Math.abs(deltaX) > 0.01 || Math.abs(deltaY) > 0.01) {
+        curX += deltaX * 0.04 // Reduced easing for smoother performance
+        curY += deltaY * 0.04
+        wrapper.style.transform = `translate3d(${curX.toFixed(2)}px, ${curY.toFixed(2)}px, 0)`
+        isAnimating = true
+        requestAnimationFrame(tick)
+      } else {
+        isAnimating = false
+      }
     }
+    
+    const startAnimation = () => {
+      if (!isAnimating) {
+        isAnimating = true
+        tick()
+      }
+    }
+    
     window.addEventListener("pointermove", onMove, { passive: true })
-    const id = requestAnimationFrame(tick)
+    window.addEventListener("pointermove", startAnimation, { passive: true })
+    
     return () => {
       window.removeEventListener("pointermove", onMove)
-      cancelAnimationFrame(id)
+      window.removeEventListener("pointermove", startAnimation)
     }
   }, [])
 

@@ -1,67 +1,43 @@
 "use client";
 
-import { GitBranch, Plus, Star, GitCommit } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { GitBranch, Plus, ExternalLink, Users, Calendar, Code } from "lucide-react";
 
 interface Project {
   id: string;
   name: string;
   description: string;
+  repoUrl?: string;
   language: string;
   status: string;
-  repoUrl: string;
-  stars: number;
-  commits: number;
-  lastUpdate: string;
+  createdAt: string;
+  memberCount: number;
   creator: {
     name: string;
-    avatar: string;
-    githubUsername: string;
+    githubUsername?: string;
   };
-  members: Array<{
-    name: string;
-    avatar: string;
-    role: string;
-    joinedAt: string;
-  }>;
-  stats: {
-    totalMembers: number;
-    recentCommits: number;
-    recentPRs: number;
-    totalActivities: number;
-  };
-  createdAt: string;
-  updatedAt: string;
 }
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     fetchProjects();
-  }, [filter]);
+  }, []);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      const url = filter === 'all' 
-        ? '/api/dashboard/projects?limit=50'
-        : `/api/dashboard/projects?limit=50&status=${filter}`;
-
-      const response = await fetch(url);
+      const response = await fetch('/api/dashboard/projects');
       
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
       }
 
       const data = await response.json();
-      setProjects(data.projects);
+      setProjects(data.projects || []);
     } catch (err) {
       console.error('Error fetching projects:', err);
       setError('Failed to load projects');
@@ -71,46 +47,19 @@ export default function ProjectsPage() {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return '#0B874F';
-      case 'planning': return '#F5A623';
-      case 'completed': return '#9B59B6';
-      case 'archived': return '#6B7280';
-      default: return '#0B874F';
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'bg-[#0B874F]/20 text-[#0B874F] border-[#0B874F]/30';
+      case 'planning':
+        return 'bg-[#F5A623]/20 text-[#F5A623] border-[#F5A623]/30';
+      case 'completed':
+        return 'bg-[#9B59B6]/20 text-[#9B59B6] border-[#9B59B6]/30';
+      case 'archived':
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
-
-  const getLanguageColor = (language: string) => {
-    const colors: { [key: string]: string } = {
-      'JavaScript': '#F7DF1E',
-      'TypeScript': '#3178C6',
-      'Python': '#3776AB',
-      'Java': '#ED8B00',
-      'C++': '#00599C',
-      'Go': '#00ADD8',
-      'Rust': '#DEA584',
-      'PHP': '#777BB4',
-      'Ruby': '#CC342D',
-      'C#': '#239120',
-      'Swift': '#FA7343',
-      'Kotlin': '#7F52FF',
-      'Dart': '#00D4AA',
-      'R': '#276DC3',
-      'Scala': '#DC322F',
-      'Elixir': '#4B275F',
-      'Clojure': '#5881D8',
-      'Haskell': '#5D4F85',
-      'OCaml': '#EC6813',
-      'F#': '#378BBA'
-    };
-    return colors[language] || '#6B7280';
-  };
-
-  const filteredProjects = projects.filter(project => 
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.language.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (loading) {
     return (
@@ -125,8 +74,9 @@ export default function ProjectsPage() {
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
               <div className="animate-pulse">
-                <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+                <div className="h-6 bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded w-2/3"></div>
               </div>
             </div>
           ))}
@@ -158,56 +108,26 @@ export default function ProjectsPage() {
       <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#0B874F] mb-2">
+            <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
+              <GitBranch className="w-8 h-8 mr-3" />
               Projects
             </h1>
             <p className="text-gray-400">
-              Explore and contribute to open source projects in the FOSSER community.
+              Explore and contribute to open source projects
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-white">{projects.length}</div>
-            <div className="text-sm text-gray-400">Total Projects</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search projects by name, description, or language..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-black/40 border border-[#0B874F]/30 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#0B874F]/50"
-            />
-          </div>
-          <div className="flex gap-2">
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="bg-black/40 border border-[#0B874F]/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0B874F]/50"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="planning">Planning</option>
-              <option value="completed">Completed</option>
-              <option value="archived">Archived</option>
-            </select>
-            <button className="px-4 py-2 bg-[#0B874F] text-white rounded-lg hover:bg-[#0B874F]/80 transition-colors flex items-center space-x-2">
-              <Plus className="w-4 h-4" />
-              <span>New Project</span>
-            </button>
-          </div>
+          
+          <button className="flex items-center px-4 py-2 bg-[#0B874F] text-black rounded-lg hover:bg-[#0B874F]/80 transition-colors font-medium">
+            <Plus className="w-4 h-4 mr-2" />
+            New Project
+          </button>
         </div>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProjects.length > 0 ? (
-          filteredProjects.map((project) => (
+      {projects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
             <div
               key={project.id}
               className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200"
@@ -215,113 +135,81 @@ export default function ProjectsPage() {
               {/* Project Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white mb-1">{project.name}</h3>
-                  <p className="text-gray-400 text-sm line-clamp-2">{project.description}</p>
-                </div>
-                <div className="flex items-center space-x-2 ml-4">
-                  <span
-                    className="text-xs px-2 py-1 rounded-full"
-                    style={{
-                      backgroundColor: `${getStatusColor(project.status)}20`,
-                      color: getStatusColor(project.status)
-                    }}
-                  >
-                    {project.status}
+                  <h3 className="text-xl font-bold text-white mb-2">{project.name}</h3>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
+                    {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                   </span>
                 </div>
-              </div>
-
-              {/* Language and Creator */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: getLanguageColor(project.language) }}
-                  ></div>
-                  <span className="text-sm text-gray-300">{project.language}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={project.creator.avatar}
-                    alt={project.creator.name}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  <span className="text-sm text-gray-400">{project.creator.name}</span>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1">
-                    <Star className="w-4 h-4 text-[#F5A623]" />
-                    <span className="text-white font-medium">{project.stars}</span>
-                  </div>
-                  <div className="text-xs text-gray-400">Stars</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1">
-                    <GitCommit className="w-4 h-4 text-[#0B874F]" />
-                    <span className="text-white font-medium">{project.commits}</span>
-                  </div>
-                  <div className="text-xs text-gray-400">Commits</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1">
-                    <GitBranch className="w-4 h-4 text-[#9B59B6]" />
-                    <span className="text-white font-medium">{project.stats.totalMembers}</span>
-                  </div>
-                  <div className="text-xs text-gray-400">Members</div>
-                </div>
-              </div>
-
-              {/* Activity */}
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Recent Commits</span>
-                  <span className="text-white">{project.stats.recentCommits}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Recent PRs</span>
-                  <span className="text-white">{project.stats.recentPRs}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Total Activities</span>
-                  <span className="text-white">{project.stats.totalActivities}</span>
-                </div>
-              </div>
-
-              {/* Last Update */}
-              <div className="text-xs text-gray-500 mb-4">
-                Last updated: {project.lastUpdate}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-2">
                 {project.repoUrl && (
                   <a
                     href={project.repoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2 bg-[#0B874F]/10 border border-[#0B874F]/30 text-[#0B874F] rounded hover:bg-[#0B874F]/20 transition-colors text-sm text-center"
+                    className="text-gray-400 hover:text-[#0B874F] transition-colors"
                   >
-                    View Repository
+                    <ExternalLink className="w-5 h-5" />
                   </a>
                 )}
-                <button className="flex-1 py-2 bg-[#F5A623]/10 border border-[#F5A623]/30 text-[#F5A623] rounded hover:bg-[#F5A623]/20 transition-colors text-sm">
-                  Join Project
-                </button>
               </div>
+
+              {/* Description */}
+              <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                {project.description}
+              </p>
+
+              {/* Project Info */}
+              <div className="space-y-3">
+                <div className="flex items-center text-sm text-gray-400">
+                  <Code className="w-4 h-4 mr-2" />
+                  <span>{project.language}</span>
+                </div>
+                
+                <div className="flex items-center text-sm text-gray-400">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>{project.memberCount} member{project.memberCount !== 1 ? 's' : ''}</span>
+                </div>
+                
+                <div className="flex items-center text-sm text-gray-400">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Creator */}
+              <div className="mt-4 pt-4 border-t border-[#0B874F]/20">
+                <div className="flex items-center text-sm">
+                  <div className="w-6 h-6 bg-[#0B874F]/20 rounded-full flex items-center justify-center mr-2">
+                    <span className="text-[#0B874F] text-xs font-bold">
+                      {project.creator.name?.charAt(0) || '?'}
+                    </span>
+                  </div>
+                  <span className="text-gray-400">
+                    by <span className="text-white">{project.creator.name}</span>
+                    {project.creator.githubUsername && (
+                      <span className="text-gray-500"> (@{project.creator.githubUsername})</span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button className="w-full mt-4 px-4 py-2 bg-[#0B874F]/10 border border-[#0B874F]/30 rounded-lg text-[#0B874F] hover:bg-[#0B874F]/20 transition-colors font-medium">
+                View Project
+              </button>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-12 text-gray-400">
-            <GitBranch className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <h3 className="text-xl font-medium mb-2">No Projects Found</h3>
-            <p>{searchTerm ? 'Try adjusting your search terms.' : 'No projects available.'}</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-12 text-center">
+          <GitBranch className="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" />
+          <h3 className="text-xl font-bold text-gray-400 mb-2">No Projects Yet</h3>
+          <p className="text-gray-500 mb-6">Start your first project and begin contributing!</p>
+          <button className="px-6 py-3 bg-[#0B874F] text-black rounded-lg hover:bg-[#0B874F]/80 transition-colors font-medium">
+            <Plus className="w-4 h-4 inline mr-2" />
+            Create Project
+          </button>
+        </div>
+      )}
     </div>
   );
 }

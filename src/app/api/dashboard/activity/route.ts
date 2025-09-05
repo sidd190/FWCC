@@ -1,37 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user from JWT token
-    const token = request.cookies.get('auth-token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    let userId: string;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
-      userId = decoded.userId;
-    } catch (error) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
-    // Get query parameters
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
+    const filter = searchParams.get('filter') || 'all';
 
-    // Fetch user activities
+    // Build where clause based on filter
+    let whereClause: any = {};
+    
+    if (filter !== 'all') {
+      switch (filter) {
+        case 'commits':
+          whereClause.type = 'COMMIT';
+          break;
+        case 'pull_requests':
+          whereClause.type = 'PULL_REQUEST';
+          break;
+        case 'issues':
+          whereClause.type = 'ISSUE';
+          break;
+      }
+    }
+
+    // Fetch activities with user information
     const activities = await prisma.activity.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
+      where: whereClause,
       take: limit,
       skip: offset,
+      orderBy: { createdAt: 'desc' },
       include: {
-        project: true,
-        event: true
+        user: {
+          select: {
+            name: true,
+            githubUsername: true
+          }
+        },
+        project: {
+          select: {
+            name: true
+          }
+        },
+        event: {
+          select: {
+            title: true
+          }
+        }
       }
     });
 
@@ -40,22 +56,26 @@ export async function GET(request: NextRequest) {
       id: activity.id,
       type: activity.type.toLowerCase(),
       message: activity.description,
-      repo: activity.metadata ? (activity.metadata as any).repo || 'Internal' : 'Internal',
+      repo: activity.metadata ? (activity.metadata as any).repo : null,
       target: activity.project?.name || activity.event?.title || 'System',
       time: timeAgo(activity.createdAt),
       timestamp: activity.createdAt.toISOString(),
-      metadata: activity.metadata
+      user: {
+        name: activity.user.name || 'Anonymous',
+        githubUsername: activity.user.githubUsername
+      }
     }));
 
     return NextResponse.json({
       success: true,
       activities: formattedActivities,
-      total: activities.length,
-      hasMore: activities.length === limit
+      total: formattedActivities.length,
+      hasMore: formattedActivities.length === limit,
+      filter
     });
 
   } catch (error) {
-    console.error('Activities fetch error:', error);
+    console.error('Activity fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch activities' }, { status: 500 });
   }
 }

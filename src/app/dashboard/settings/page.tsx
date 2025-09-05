@@ -1,21 +1,85 @@
 "use client";
 
-import { Settings, User, Bell, Shield, Database, Palette } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { Settings, Bell, Shield, Github, Save, RefreshCw } from "lucide-react";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('profile');
+  const { user, logout } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [settings, setSettings] = useState({
+    notifications: {
+      email: true,
+      push: false,
+      achievements: true,
+      events: true,
+      projects: true
+    },
+    privacy: {
+      profileVisible: true,
+      statsVisible: true,
+      activityVisible: false
+    }
+  });
 
-  const tabs = [
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'notifications', name: 'Notifications', icon: Bell },
-    { id: 'security', name: 'Security', icon: Shield },
-    { id: 'data', name: 'Data & Privacy', icon: Database },
-    { id: 'appearance', name: 'Appearance', icon: Palette },
-  ];
+  const handleSaveSettings = async () => {
+    try {
+      setSaving(true);
+      const response = await fetch('/api/dashboard/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
+
+      alert('Settings saved successfully!');
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      alert('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSyncGitHub = async () => {
+    if (!user?.githubUsername) {
+      alert('No GitHub username configured. Please update your profile first.');
+      return;
+    }
+
+    try {
+      setSyncing(true);
+      const response = await fetch('/api/dashboard/sync-github', {
+        method: 'POST'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to sync GitHub data');
+      }
+
+      alert('GitHub data synced successfully!');
+    } catch (err) {
+      console.error('Error syncing GitHub:', err);
+      alert(err instanceof Error ? err.message : 'Failed to sync GitHub data');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to logout?')) {
+      await logout();
+      window.location.href = '/login';
+    }
+  };
 
   return (
-    <div className="space-y-6 relative z-10">
+    <div className="space-y-6">
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
         <h1 className="text-3xl font-bold text-[#0B874F] mb-2 flex items-center">
@@ -23,138 +87,227 @@ export default function SettingsPage() {
           Settings
         </h1>
         <p className="text-gray-400">
-          Manage your account settings and preferences
+          Manage your account preferences and integrations
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-4 sticky top-6">
-            <nav className="space-y-2">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-3 py-2 rounded-lg transition-colors text-left ${
-                      activeTab === tab.id
-                        ? 'bg-[#0B874F]/20 text-[#0B874F] border border-[#0B874F]/50'
-                        : 'text-gray-300 hover:bg-[#0B874F]/10 hover:text-[#0B874F]'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 mr-3" />
-                    {tab.name}
-                  </button>
-                );
-              })}
-            </nav>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Notifications */}
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+            <Bell className="w-5 h-5 mr-2" />
+            Notifications
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Email Notifications</label>
+                <p className="text-sm text-gray-400">Receive updates via email</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications.email}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  notifications: { ...settings.notifications, email: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Push Notifications</label>
+                <p className="text-sm text-gray-400">Browser notifications</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications.push}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  notifications: { ...settings.notifications, push: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Achievement Alerts</label>
+                <p className="text-sm text-gray-400">New badges and achievements</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications.achievements}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  notifications: { ...settings.notifications, achievements: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Event Updates</label>
+                <p className="text-sm text-gray-400">Workshop and meetup notifications</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications.events}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  notifications: { ...settings.notifications, events: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Project Updates</label>
+                <p className="text-sm text-gray-400">New projects and contributions</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications.projects}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  notifications: { ...settings.notifications, projects: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="lg:col-span-3">
-          <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 relative">
-            {activeTab === 'profile' && (
+        {/* Privacy */}
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+            <Shield className="w-5 h-5 mr-2" />
+            Privacy
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-white mb-6">Profile Settings</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Display Name</label>
-                    <input
-                      type="text"
-                      defaultValue="Admin User"
-                      className="w-full px-4 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white focus:outline-none focus:border-[#0B874F]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Bio</label>
-                    <textarea
-                      rows={3}
-                      defaultValue="Full-stack developer passionate about open source"
-                      className="w-full px-4 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white focus:outline-none focus:border-[#0B874F] resize-none"
-                    />
-                  </div>
-                </div>
+                <label className="text-white font-medium">Public Profile</label>
+                <p className="text-sm text-gray-400">Make your profile visible to others</p>
               </div>
-            )}
-
-            {activeTab === 'notifications' && (
-              <div>
-                <h2 className="text-xl font-bold text-white mb-6">Notification Preferences</h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-black/30 rounded-lg">
-                    <div>
-                      <div className="text-white font-medium">Email Notifications</div>
-                      <div className="text-gray-400 text-sm">Receive updates via email</div>
-                    </div>
-                    <input type="checkbox" defaultChecked className="w-4 h-4" />
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-black/30 rounded-lg">
-                    <div>
-                      <div className="text-white font-medium">Push Notifications</div>
-                      <div className="text-gray-400 text-sm">Browser notifications for important updates</div>
-                    </div>
-                    <input type="checkbox" defaultChecked className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'security' && (
-              <div>
-                <h2 className="text-xl font-bold text-white mb-6">Security Settings</h2>
-                <div className="space-y-4">
-                  <button className="w-full p-4 bg-[#0B874F]/10 border border-[#0B874F]/30 text-[#0B874F] rounded-lg hover:bg-[#0B874F]/20 transition-colors text-left">
-                    <div className="font-medium">Change Password</div>
-                    <div className="text-sm opacity-80">Update your account password</div>
-                  </button>
-                  <button className="w-full p-4 bg-[#F5A623]/10 border border-[#F5A623]/30 text-[#F5A623] rounded-lg hover:bg-[#F5A623]/20 transition-colors text-left">
-                    <div className="font-medium">Two-Factor Authentication</div>
-                    <div className="text-sm opacity-80">Add an extra layer of security</div>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'data' && (
-              <div>
-                <h2 className="text-xl font-bold text-white mb-6">Data & Privacy</h2>
-                <div className="space-y-4">
-                  <button className="w-full p-4 bg-[#9B59B6]/10 border border-[#9B59B6]/30 text-[#9B59B6] rounded-lg hover:bg-[#9B59B6]/20 transition-colors text-left">
-                    <div className="font-medium">Export Data</div>
-                    <div className="text-sm opacity-80">Download your account data</div>
-                  </button>
-                  <button className="w-full p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors text-left">
-                    <div className="font-medium">Delete Account</div>
-                    <div className="text-sm opacity-80">Permanently delete your account</div>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'appearance' && (
-              <div>
-                <h2 className="text-xl font-bold text-white mb-6">Appearance</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Theme</label>
-                    <select className="w-full px-4 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white focus:outline-none focus:border-[#0B874F]">
-                      <option value="dark">Dark (Current)</option>
-                      <option value="light">Light</option>
-                      <option value="auto">Auto</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-6 pt-6 border-t border-[#0B874F]/30">
-              <button className="px-6 py-2 bg-[#0B874F] text-black font-medium rounded-lg hover:bg-[#0B874F]/80 transition-colors">
-                Save Changes
-              </button>
+              <input
+                type="checkbox"
+                checked={settings.privacy.profileVisible}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  privacy: { ...settings.privacy, profileVisible: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
             </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Show Statistics</label>
+                <p className="text-sm text-gray-400">Display your GitHub stats publicly</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.privacy.statsVisible}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  privacy: { ...settings.privacy, statsVisible: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-white font-medium">Activity Feed</label>
+                <p className="text-sm text-gray-400">Show your activity to others</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.privacy.activityVisible}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  privacy: { ...settings.privacy, activityVisible: e.target.checked }
+                })}
+                className="w-4 h-4 text-[#0B874F] bg-black border-[#0B874F]/30 rounded focus:ring-[#0B874F]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* GitHub Integration */}
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+            <Github className="w-5 h-5 mr-2" />
+            GitHub Integration
+          </h2>
+          
+          <div className="space-y-4">
+            <div>
+              <p className="text-gray-400 mb-4">
+                {user?.githubUsername 
+                  ? `Connected as @${user.githubUsername}`
+                  : 'No GitHub account connected'
+                }
+              </p>
+              
+              {user?.githubUsername ? (
+                <div className="space-y-3">
+                  <button
+                    onClick={handleSyncGitHub}
+                    disabled={syncing}
+                    className="w-full flex items-center justify-center px-4 py-2 bg-[#0B874F]/10 border border-[#0B874F]/30 rounded-lg text-[#0B874F] hover:bg-[#0B874F]/20 transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                    {syncing ? 'Syncing...' : 'Sync GitHub Data'}
+                  </button>
+                  
+                  <p className="text-xs text-gray-500">
+                    Last sync updates your commits, PRs, and contribution stats
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <button
+                    onClick={() => window.location.href = '/dashboard/profile'}
+                    className="w-full px-4 py-2 bg-[#0B874F] text-black rounded-lg hover:bg-[#0B874F]/80 transition-colors font-medium"
+                  >
+                    Connect GitHub Account
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Add your GitHub username in your profile to enable sync
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Account Actions */}
+        <div className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4">Account Actions</h2>
+          
+          <div className="space-y-4">
+            <button
+              onClick={handleSaveSettings}
+              disabled={saving}
+              className="w-full flex items-center justify-center px-4 py-2 bg-[#0B874F] text-black rounded-lg hover:bg-[#0B874F]/80 transition-colors disabled:opacity-50 font-medium"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Saving...' : 'Save Settings'}
+            </button>
+            
+            <button
+              onClick={handleLogout}
+              className="w-full px-4 py-2 bg-red-600/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors font-medium"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
