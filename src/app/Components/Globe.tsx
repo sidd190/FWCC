@@ -1,170 +1,174 @@
 "use client";
 import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
+import type { GlobeMethods } from "react-globe.gl";
+
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
-import { useEffect, useState, useRef } from "react";
 
-const GlobeComponent = () => {
-  const globeRef = useRef<any>(null);
-  const [countries, setCountries] = useState<any[]>([]);
-  const [hoverD, setHoverD] = useState<any>();
+interface CountryProperties {
+  NAME?: string;
+  name?: string;
+  contributions?: number;
+  oscs?: number;
+  [key: string]: any;
+}
 
+interface CountryFeature {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: any[];
+  };
+  properties: CountryProperties;
+}
+
+const GlobeComponent: React.FC = () => {
+  const globeRef = useRef<GlobeMethods | undefined>(undefined);
+  const [countries, setCountries] = useState<CountryFeature[]>([]);
+  const [hoverD, setHoverD] = useState<CountryFeature | null>(null);
+
+  // Fetch data
   useEffect(() => {
-    fetch('//raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
-      .then(res => res.json())
-      .then(countriesData => {
-        const countriesWithData = countriesData.features.map((country: any) => {
-          const countryName = country.properties.NAME || country.properties.name || '';
-          let contributions = 0;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
+        );
+        const countriesData = await res.json();
 
-          // More accurate OSC data based on real GitHub statistics and developer populations
-          if (countryName === 'United States') {
-            contributions = Math.floor(Math.random() * 500000 + 2500000); // 2.5M-3M
-          } else if (countryName === 'China') {
-            contributions = Math.floor(Math.random() * 300000 + 1200000);
-          } else if (countryName === 'India') {
-            contributions = Math.floor(Math.random() * 200000 + 800000);
-          } else if (countryName === 'Germany') {
-            contributions = Math.floor(Math.random() * 100000 + 400000);
-          } else if (countryName === 'United Kingdom') {
-            contributions = Math.floor(Math.random() * 80000 + 300000);
-          } else if (countryName === 'France') {
-            contributions = Math.floor(Math.random() * 60000 + 200000);
-          } else if (countryName === 'Canada') {
-            contributions = Math.floor(Math.random() * 50000 + 150000);
-          } else if (countryName === 'Japan') {
-            contributions = Math.floor(Math.random() * 40000 + 120000);
-          } else if (countryName === 'Brazil') {
-            contributions = Math.floor(Math.random() * 30000 + 100000);
-          } else if (countryName === 'Russia') {
-            contributions = Math.floor(Math.random() * 25000 + 80000);
-          } else if (countryName === 'Australia') {
-            contributions = Math.floor(Math.random() * 20000 + 60000);
-          } else if (countryName === 'South Korea') {
-            contributions = Math.floor(Math.random() * 15000 + 50000);
-          } else if (countryName === 'Netherlands') {
-            contributions = Math.floor(Math.random() * 10000 + 30000);
-          } else if (countryName === 'Sweden') {
-            contributions = Math.floor(Math.random() * 8000 + 25000);
-          } else if (countryName === 'Norway') {
-            contributions = Math.floor(Math.random() * 5000 + 15000);
-          } else if (countryName === 'Denmark') {
-            contributions = Math.floor(Math.random() * 4000 + 12000);
-          } else if (countryName === 'Finland') {
-            contributions = Math.floor(Math.random() * 3000 + 10000);
-          } else if (countryName === 'Switzerland') {
-            contributions = Math.floor(Math.random() * 2000 + 8000);
-          } else if (countryName === 'Austria') {
-            contributions = Math.floor(Math.random() * 1500 + 6000);
-          } else if (countryName === 'Belgium') {
-            contributions = Math.floor(Math.random() * 1000 + 4000);
-          } else if (countryName === 'Poland') {
-            contributions = Math.floor(Math.random() * 800 + 3000);
-          } else if (countryName === 'Czech Republic') {
-            contributions = Math.floor(Math.random() * 600 + 2000);
-          } else if (countryName === 'Hungary') {
-            contributions = Math.floor(Math.random() * 400 + 1500);
-          } else if (countryName === 'Romania') {
-            contributions = Math.floor(Math.random() * 300 + 1000);
-          } else if (countryName === 'Bulgaria') {
-            contributions = Math.floor(Math.random() * 200 + 800);
-          } else if (countryName === 'Croatia') {
-            contributions = Math.floor(Math.random() * 150 + 600);
-          } else if (countryName === 'Slovenia') {
-            contributions = Math.floor(Math.random() * 100 + 400);
-          } else if (countryName === 'Slovakia') {
-            contributions = Math.floor(Math.random() * 80 + 300);
-          } else if (countryName === 'Estonia') {
-            contributions = Math.floor(Math.random() * 60 + 200);
-          } else if (countryName === 'Latvia') {
-            contributions = Math.floor(Math.random() * 40 + 150);
-          } else if (countryName === 'Lithuania') {
-            contributions = Math.floor(Math.random() * 30 + 100);
-          } else if (countryName === 'Luxembourg') {
-            contributions = Math.floor(Math.random() * 20 + 80);
-          } else if (countryName === 'Malta') {
-            contributions = Math.floor(Math.random() * 15 + 60);
-          } else if (countryName === 'Cyprus') {
-            contributions = Math.floor(Math.random() * 10 + 40);
-          } else if (countryName === 'Ireland') {
-            contributions = Math.floor(Math.random() * 5000 + 20000);
-          } else if (countryName === 'Iceland') {
-            contributions = Math.floor(Math.random() * 200 + 800);
-          } else if (countryName === 'Liechtenstein') {
-            contributions = Math.floor(Math.random() * 5 + 20);
-          } else if (countryName === 'Monaco') {
-            contributions = Math.floor(Math.random() * 3 + 15);
-          } else if (countryName === 'San Marino') {
-            contributions = Math.floor(Math.random() * 2 + 10);
-          } else if (countryName === 'Vatican City') {
-            contributions = Math.floor(Math.random() * 1 + 5);
-          } else {
-            // For other countries, use a smaller random contribution
-            contributions = Math.floor(Math.random() * 100 + 50);
-          }
+        const countriesWithData: CountryFeature[] = countriesData.features.map(
+          (country: any) => {
+            const countryName =
+              country.properties.NAME || country.properties.name || "";
+            let contributions = 0;
 
-          return {
-            ...country,
-            properties: {
-              ...country.properties,
-              contributions: contributions
+            if (countryName === "United States") {
+              contributions = Math.floor(Math.random() * 500000 + 2500000);
+            } else if (countryName === "China") {
+              contributions = Math.floor(Math.random() * 300000 + 1200000);
+            } else if (countryName === "India") {
+              contributions = Math.floor(Math.random() * 200000 + 800000);
+            } else if (["Germany", "United Kingdom"].includes(countryName)) {
+              contributions = Math.floor(Math.random() * 150000 + 500000);
+            } else if (["Japan", "Canada", "France"].includes(countryName)) {
+              contributions = Math.floor(Math.random() * 100000 + 300000);
+            } else if (["Brazil", "Russia", "South Korea"].includes(countryName)) {
+              contributions = Math.floor(Math.random() * 80000 + 200000);
+            } else if (
+              ["Netherlands", "Australia", "Sweden", "Switzerland", "Israel"].includes(countryName)
+            ) {
+              contributions = Math.floor(Math.random() * 60000 + 120000);
+            } else if (
+              ["Italy", "Spain", "Poland", "Singapore", "Norway", "Denmark"].includes(countryName)
+            ) {
+              contributions = Math.floor(Math.random() * 40000 + 80000);
+            } else if (
+              ["Ukraine", "Belgium", "Finland", "Austria", "Ireland"].includes(countryName)
+            ) {
+              contributions = Math.floor(Math.random() * 30000 + 50000);
+            } else if (
+              ["Czech Republic", "Portugal", "Hungary", "Romania"].includes(countryName)
+            ) {
+              contributions = Math.floor(Math.random() * 20000 + 30000);
+            } else {
+              contributions = Math.floor(Math.random() * 15000 + 5000);
             }
-          };
-        });
+
+            return {
+              ...country,
+              properties: {
+                ...country.properties,
+                contributions,
+                oscs: contributions,
+              },
+            } as CountryFeature;
+          }
+        );
 
         setCountries(countriesWithData);
-      })
-      .catch(error => {
-        console.error('Error fetching countries data:', error);
-      });
+      } catch (error) {
+        console.error("Error loading countries data:", error);
+        setCountries([]);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // Auto-rotation
+  useEffect(() => {
+    if (!globeRef.current) return;
+
+    let animationFrameId: number;
+    const rotate = () => {
+      const controls = globeRef.current?.controls();
+      if (controls) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.6;
+      }
+      animationFrameId = requestAnimationFrame(rotate);
+    };
+
+    rotate();
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  // Color mapping
+  const getColor = (contributions?: number): string => {
+    if (!contributions) return "#000000";
+    if (contributions >= 500000) return "#0B874F";
+    if (contributions >= 200000) return "#2D8F5A";
+    if (contributions >= 80000) return "#4A6741";
+    if (contributions >= 30000) return "#F5A623";
+    return "#E94B3C";
+  };
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex items-center justify-center">
       <Globe
         ref={globeRef}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-        backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-        hexPolygonsData={countries}
-        hexPolygonResolution={3}
-        hexPolygonMargin={0.7}
-        hexPolygonColor={(d: any) => {
-          const contributions = d.properties?.contributions || 0;
-          if (contributions > 1000000) return '#ff6b6b';
-          if (contributions > 500000) return '#ffa726';
-          if (contributions > 100000) return '#ffeb3b';
-          if (contributions > 50000) return '#66bb6a';
-          if (contributions > 10000) return '#42a5f5';
-          if (contributions > 1000) return '#ab47bc';
-          if (contributions > 100) return '#8d6e63';
-          return '#90a4ae';
+        width={750}
+        height={750}
+        globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
+        backgroundColor="rgba(0,0,0,0)"
+        animateIn={true}
+        polygonsData={countries as any[]}
+        polygonAltitude={(d: any) => (d === hoverD ? 0.15 : 0.08)}
+        polygonCapColor={(d: any) => getColor(d?.properties?.contributions)}
+        polygonSideColor={() => "rgba(11, 135, 79, 0.2)"}
+        polygonStrokeColor={() => "#0B874F"}
+        polygonLabel={(d: any) => {
+          const properties: CountryProperties = d?.properties ?? {};
+          return `
+            <div style="
+              background: rgba(0, 0, 0, 0.95);
+              padding: 16px;
+              border-radius: 12px;
+              color: #FFFFFF;
+              border: 3px solid #4A90E2;
+              font-family: 'Courier New', monospace;
+              backdrop-filter: blur(15px);
+              box-shadow: 0 0 30px rgba(74, 144, 226, 0.6), 0 0 60px rgba(74, 144, 226, 0.3);
+              font-size: 14px;
+              font-weight: bold;
+              text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+              min-width: 200px;
+            ">
+              <div style="color: #F5A623; font-size: 16px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                ${properties.NAME || properties.name || "Unknown"}
+              </div>
+              <div style="color: #0B874F; font-size: 14px;">
+                OSCs: ${properties.oscs?.toLocaleString() || "N/A"}
+              </div>
+              <div style="color: #4A90E2; font-size: 12px; margin-top: 4px; opacity: 0.8;">
+                Annual Contributions
+              </div>
+            </div>
+          `;
         }}
-        hexPolygonAltitude={(d: any) => {
-          const contributions = d.properties?.contributions || 0;
-          return Math.max(0, Math.log(contributions + 1) * 0.1);
-        }}
-        onHexPolygonHover={(polygon: any) => {
-          if (polygon) {
-            setHoverD(polygon);
-            globeRef.current?.pointOfView({ lat: polygon.properties.lat, lng: polygon.properties.lng }, 1000);
-          }
-        }}
-        onHexPolygonClick={(polygon: any) => {
-          if (polygon) {
-            setHoverD(polygon);
-            globeRef.current?.pointOfView({ lat: polygon.properties.lat, lng: polygon.properties.lng }, 1000);
-          }
-        }}
-        width={800}
-        height={600}
+        onPolygonHover={(polygon: any | null) => setHoverD(polygon)}
+        polygonsTransitionDuration={400}
       />
-      {hoverD && (
-        <div className="absolute top-4 left-4 bg-black/80 text-white p-4 rounded-lg backdrop-blur-sm">
-          <h3 className="text-lg font-bold">{hoverD.properties?.NAME || hoverD.properties?.name || 'Unknown'}</h3>
-          <p className="text-sm text-gray-300">
-            {hoverD.properties?.contributions?.toLocaleString() || 0} contributions
-          </p>
-        </div>
-      )}
     </div>
   );
 };
