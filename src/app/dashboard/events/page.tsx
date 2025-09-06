@@ -332,32 +332,32 @@ export default function EventsPage() {
             const spotsLeft = event.maxAttendees - event.currentAttendees;
             
             return (
-              <div
-                key={event.id}
-                className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200"
-              >
+          <div
+            key={event.id}
+            className="bg-black/40 backdrop-blur-sm border border-[#0B874F]/30 rounded-lg p-6 hover:border-[#0B874F]/50 transition-all duration-200"
+          >
                 {/* Event Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <div className="flex items-center space-x-2 mb-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getEventTypeColor(event.type)}`}>
                         {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                      </span>
+                  </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
                         {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{event.title}</h3>
-                  </div>
+                  </span>
                 </div>
+                <h3 className="text-xl font-bold text-white mb-2">{event.title}</h3>
+              </div>
+            </div>
 
                 {/* Description */}
                 <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                   {event.description}
                 </p>
 
-                {/* Event Details */}
-                <div className="space-y-3 mb-4">
+            {/* Event Details */}
+            <div className="space-y-3 mb-4">
                   <div className="flex items-center text-sm text-gray-400">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{date}</span>
@@ -564,8 +564,8 @@ export default function EventsPage() {
                     className="w-full px-3 py-2 bg-black/50 border border-[#0B874F]/30 rounded-lg text-white focus:outline-none focus:border-[#0B874F]"
                     min="1"
                   />
-                </div>
-                
+            </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Event Type</label>
                   <select
@@ -581,7 +581,7 @@ export default function EventsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={handleCreateEvent}
@@ -590,13 +590,13 @@ export default function EventsPage() {
               >
                 {creating ? 'Creating...' : 'Create Event'}
               </button>
-              <button
+            <button 
                 onClick={() => setShowCreateModal(false)}
                 className="px-4 py-2 bg-gray-500/20 text-gray-400 rounded-lg hover:bg-gray-500/30 transition-colors"
               >
                 Cancel
-              </button>
-            </div>
+            </button>
+          </div>
           </div>
         </div>
       )}
@@ -617,9 +617,9 @@ export default function EventsPage() {
                   className="w-full px-3 py-2 bg-black/50 border border-[#E74C3C]/30 rounded-lg text-white focus:outline-none focus:border-[#E74C3C]"
                   placeholder="Please provide a clear reason for rejection..."
                 />
-              </div>
-            </div>
-            
+          </div>
+        </div>
+        
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={handleRejectEvent}

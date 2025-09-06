@@ -23,8 +23,8 @@ const LoadingPage = () => {
   const [currentTip, setCurrentTip] = useState('');
   
   // Performance optimization: Use refs to avoid unnecessary re-renders
-  const animationFrameRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const startTimeRef = useRef<number | undefined>(undefined);
   const pathPointsRef = useRef<PathPoint[]>([]);
   const isSkippedRef = useRef(false);
 

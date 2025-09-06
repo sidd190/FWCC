@@ -4,9 +4,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  context: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const params = await context.params;
+    const { eventId } = params;
+
     // Get user from JWT token
     const token = request.cookies.get('auth-token')?.value;
     if (!token) {
@@ -20,8 +23,6 @@ export async function POST(
     } catch (error) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
-
-    const { eventId } = params;
 
     // Check if event exists and is upcoming
     const event = await prisma.event.findUnique({

@@ -13,7 +13,7 @@ export function TerminalOverlay() {
     '> System ready. Try the command "cd about":',
   ]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const command = input.trim();
 

@@ -12,12 +12,12 @@ export function Controls() {
             color: '#0B874F'
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0B874F'
-            e.target.style.color = '#1A1A1A'
+            e.currentTarget.style.backgroundColor = '#0B874F'
+            e.currentTarget.style.color = '#1A1A1A'
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#1A1A1A'
-            e.target.style.color = '#0B874F'
+            e.currentTarget.style.backgroundColor = '#1A1A1A'
+            e.currentTarget.style.color = '#0B874F'
           }}
         >
           +
@@ -30,12 +30,12 @@ export function Controls() {
             color: '#0B874F'
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0B874F'
-            e.target.style.color = '#1A1A1A'
+            e.currentTarget.style.backgroundColor = '#0B874F'
+            e.currentTarget.style.color = '#1A1A1A'
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#1A1A1A'
-            e.target.style.color = '#0B874F'
+            e.currentTarget.style.backgroundColor = '#1A1A1A'
+            e.currentTarget.style.color = '#0B874F'
           }}
         >
           −
@@ -48,12 +48,12 @@ export function Controls() {
             color: '#0B874F'
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0B874F'
-            e.target.style.color = '#1A1A1A'
+            e.currentTarget.style.backgroundColor = '#0B874F'
+            e.currentTarget.style.color = '#1A1A1A'
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#1A1A1A'
-            e.target.style.color = '#0B874F'
+            e.currentTarget.style.backgroundColor = '#1A1A1A'
+            e.currentTarget.style.color = '#0B874F'
           }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

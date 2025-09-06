@@ -48,14 +48,12 @@ export default function SmoothScrollProvider({ children }: Props) {
     const lenis = new Lenis({
       duration: 0.6, // Faster response
       smoothWheel: true,
-      smoothTouch: false, // Disable for better mobile performance
       easing: (t: number) => 1 - Math.pow(1 - t, 2), // Simpler, faster easing
       syncTouch: false,
       gestureOrientation: "vertical",
       wheelMultiplier: 1.4, // More responsive
       touchMultiplier: 2,
       infinite: false,
-      normalizeWheel: true,
     })
     lenisRef.current = lenis
 

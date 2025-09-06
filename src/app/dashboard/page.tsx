@@ -329,11 +329,11 @@ const DashboardPage = React.memo(function DashboardPage() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-white text-sm">{activity.message || activity.description}</p>
+                    <p className="text-white text-sm">{activity.message}</p>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-[#0B874F] text-xs">{activity.repo || activity.target}</span>
+                      <span className="text-[#0B874F] text-xs">{activity.repo}</span>
                       <span className="text-gray-400 text-xs">•</span>
-                      <span className="text-gray-400 text-xs">{activity.time || activity.timestamp}</span>
+                      <span className="text-gray-400 text-xs">{activity.time}</span>
                     </div>
                   </div>
                 </div>

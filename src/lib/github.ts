@@ -94,13 +94,13 @@ export class GitHubService {
         name: repo.name,
         full_name: repo.full_name,
         description: repo.description,
-        language: repo.language,
-        stargazers_count: repo.stargazers_count,
-        forks_count: repo.forks_count,
-        open_issues_count: repo.open_issues_count,
-        created_at: repo.created_at,
-        updated_at: repo.updated_at,
-        pushed_at: repo.pushed_at,
+        language: repo.language || null,
+        stargazers_count: repo.stargazers_count || 0,
+        forks_count: repo.forks_count || 0,
+        open_issues_count: repo.open_issues_count || 0,
+        created_at: repo.created_at || new Date().toISOString(),
+        updated_at: repo.updated_at || new Date().toISOString(),
+        pushed_at: repo.pushed_at || new Date().toISOString(),
       }));
     } catch (error) {
       console.error(`Error fetching repositories for ${username}:`, error);
@@ -229,9 +229,9 @@ export class GitHubService {
       });
 
       return data.slice(0, 10).map(event => ({
-        type: event.type,
+        type: event.type || 'unknown',
         repo: event.repo?.name || 'Unknown',
-        date: event.created_at,
+        date: event.created_at || new Date().toISOString(),
         message: this.getEventMessage(event),
       }));
     } catch (error) {
