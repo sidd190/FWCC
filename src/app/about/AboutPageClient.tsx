@@ -148,7 +148,7 @@ export default function AboutPageClient() {
                       data-magnetic
                     >
                       <Link href="https://discord.gg/7HrTYAUpdd" target="_blank" rel="noreferrer" className="spark-underline">
-                        Join Discord
+                        Join Discord!
                       </Link>
                     </Button>
                   </div>
